@@ -1,5 +1,13 @@
-#!/usr/bin/env python
-# vim: set fileencoding=utf-8
+# -*- coding: utf-8 -*-
+"""
+    mongoop.triggers
+    ~~~~~~~~~~~~~~~~
+
+    All triggers of mongoop.
+
+    :copyright: (c) 2015 by Lujeni.
+    :license: BSD, see LICENSE for more details.
+"""
 
 import logging
 
@@ -15,13 +23,13 @@ logging.basicConfig(
     level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(message)s')
 
 
-__all__ = ['MongoTrigger', 'EmailTrigger']
+__all__ = ['KillerTrigger', 'MongoTrigger', 'EmailTrigger']
 
 
+# TODO: split the triggers into submodule.
 class BaseTrigger(object):
 
     def __init__(self, mongoop, operations):
-        self.trigger_in_progress = set()
         self.mongoop = mongoop
         self.operations = operations
 
@@ -40,25 +48,46 @@ class BaseTrigger(object):
         self.post_run(*args, **kwargs)
 
 
+class KillerTrigger(BaseTrigger):
+
+    def run(self, *args, **kwargs):
+        """ Terminates an operation as specified by the operation ID.
+        """
+        try:
+            super(KillerTrigger, self).run(*args, **kwargs)
+            # TODO: bulk kill?
+            for operation in self.operations:
+                opid = operation['opid']
+                result = self.mongoop.db.get_collection('$cmd.sys.killop').find_one(
+                    {'op': opid})
+                logging.info('run :: {} :: {} {}'.format(self.__class__.__name__, result.get('info', 'op'), opid))
+        except Exception as e:
+            logging.error('unable to run :: {} :: {}'.format(self.__class__.__name__, e))
+            return False
+        else:
+            return True
+
+
 class MongoTrigger(BaseTrigger):
     """
-    TODO: database options could be customizable.
-    TODO: conn could be use through credentials.
     TODO: choose/limit the operation fields.
     """
 
     def __init__(self, *args, **kwargs):
         super(MongoTrigger, self).__init__(*args, **kwargs)
 
-        self.db = Database(self.mongoop.conn, 'mongoop')
-        self.db.history.create_index([('opid', DESCENDING)], unique=True, background=True)
+        database = self.mongoop.triggers['mongodb'].get('database', 'mongoop')
+        collection = self.mongoop.triggers['mongodb'].get('collection', 'history')
+
+        self.db = Database(self.mongoop.conn, database)
+        self.collection = self.db.get_collection(collection)
+        self.collection.create_index([('opid', DESCENDING)], unique=True, background=True)
 
     def run(self, *args, **kwargs):
         try:
             super(MongoTrigger, self).run(*args, **kwargs)
 
-            if self.operations:
-                self.db.history.insert_many(self.operations)
+            self.collection.insert_many(self.operations)
         except DuplicateKeyError as e:
             logging.debug('op already trigger :: {}'.format(e))
         except Exception as e:
@@ -77,7 +106,7 @@ class EmailTrigger(BaseTrigger):
         try:
             super(EmailTrigger, self).run(*args, **kwargs)
 
-            email = self.mongoop.mongoop_trigger_email
+            email = self.mongoop.triggers['email']
             msg_from = email['from']
             msg_to = email['to']
 

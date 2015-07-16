@@ -1,32 +1,40 @@
-#!/usr/bin/env python
-# vim: set fileencoding=utf-8
+# -*- coding: utf-8 -*-
+"""
+    mongoop.core
+    ~~~~~~~~~~~~
+
+    The core to run mongoop.
+
+    :copyright: (c) 2015 by Lujeni.
+    :license: BSD, see LICENSE for more details.
+"""
 
 import logging
 
 from time import sleep
 
-import gevent
+from gevent import joinall
+from gevent import spawn
+
 from pymongo import MongoClient
 from pymongo.database import Database
 from pymongo.errors import ConnectionFailure
 from pymongo.errors import OperationFailure
 from pymongo.read_preferences import ReadPreference
 
+from mongoop.triggers import KillerTrigger
 from mongoop.triggers import EmailTrigger
 from mongoop.triggers import MongoTrigger
+
 
 logging.basicConfig(
     level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(message)s')
 
 
-class MongoOP(object):
+class Mongoop(object):
 
     def __init__(self, mongodb_host, mongodb_port, mongodb_credentials,
-                 mongodb_options, mongoop_running_timeout, mongoop_frequency,
-                 mongoop_killer, mongoop_trigger, mongoop_trigger_email):
-        """
-        NOTE: ugly way to manage params
-        """
+                 mongodb_options, frequency, triggers):
         try:
             # mongodb
             self.mongodb_host = mongodb_host
@@ -34,19 +42,20 @@ class MongoOP(object):
             self.mongodb_credentials = mongodb_credentials or {}
             self.mongodb_options = mongodb_options or {}
 
-            # mongoop
-            self.mongoop_running_timeout = mongoop_running_timeout
-            self.mongoop_frequency = mongoop_frequency
-            self.mongoop_killer = mongoop_killer
-            self.kill_in_progress = set()
-            self.slow_query = {
-                'secs_running': {'$gt': self.mongoop_running_timeout},
-                'op': {'$ne': 'none'}
-            }
-
             # mongoop triggers
-            self.mongoop_trigger = mongoop_trigger or []
-            self.mongoop_trigger_email = mongoop_trigger_email
+            self.already_process = []
+            self.frequency = frequency
+            self.triggers = triggers or {}
+            if self.triggers:
+                self.threshold_timeout = min([v['threshold'] for v in self.triggers.values()])
+            else:
+                self.threshold_timeout = 60
+
+            self.slow_query = {
+                'secs_running': {'$gte': self.threshold_timeout},
+                'op': {'$ne': 'none'},
+                'opid': {'$nin': self.already_process}
+            }
 
             self.conn = MongoClient(
                 host=self.mongodb_host,
@@ -71,19 +80,21 @@ class MongoOP(object):
             op_inprog = self._current_op()
 
             if op_inprog:
-                if self.mongoop_killer:
-                    threads.append(gevent.spawn(self._kill_op, op_inprog))
+                # TODO: use a loop instead of condition ?
+                if 'killer' in self.triggers:
+                    killer_trigger = KillerTrigger(mongoop=self, operations=op_inprog)
+                    threads.append(spawn(killer_trigger))
 
-                if 'mongodb' in self.mongoop_trigger:
-                    mongoop_trigger_mongodb = MongoTrigger(mongoop=self, operations=op_inprog)
-                    threads.append(gevent.spawn(mongoop_trigger_mongodb))
+                if 'mongodb' in self.triggers:
+                    mongodb_trigger = MongoTrigger(mongoop=self, operations=op_inprog)
+                    threads.append(spawn(mongodb_trigger))
 
-                if 'email' in self.mongoop_trigger:
-                    mongoop_trigger_email = EmailTrigger(mongoop=self, operations=op_inprog)
-                    threads.append(gevent.spawn(mongoop_trigger_email))
+                if 'email' in self.triggers:
+                    email_trigger = EmailTrigger(mongoop=self, operations=op_inprog)
+                    threads.append(spawn(email_trigger))
 
-            threads.append(gevent.spawn(sleep, self.mongoop_frequency))
-            gevent.joinall(threads)
+            threads.append(spawn(sleep, self.frequency))
+            joinall(threads)
 
     def _current_op(self):
         """ Get informations on operations currently running.
@@ -93,28 +104,10 @@ class MongoOP(object):
             coll = self.db.get_collection("$cmd.sys.inprog")
             result = coll.find_one(self.slow_query)
             op_inprog = result.get('inprog', {})
+            [self.already_process.append(op) for op in op_inprog]
         except Exception as e:
             logging.error('unable to retrieve op :: {}'.format(e))
         else:
-            logging.info('find {} slow op'.format(len(op_inprog)))
+            logging.info('found {} slow op'.format(len(op_inprog)))
         finally:
             return op_inprog
-
-    def _kill_op(self, operations):
-        """ Terminates an operation as specified by the operation ID.
-        :param list operations: List of slow operations.
-        """
-        try:
-            for op in operations:
-                opid = op['opid']
-                if opid in self.kill_in_progress:
-                    raise Exception('kill in progress')
-                else:
-                    self.kill_in_progress.add(opid)
-                self.db.get_collection('$cmd.sys.killop').find_one({'op': opid})
-                logging.info('kill op :: {}'.format(opid))
-        except Exception as e:
-            logging.info('unable to kill op  :: {}'.format(e))
-            return False
-        else:
-            return True

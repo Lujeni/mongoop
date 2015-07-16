@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# vim: set fileencoding=utf-8
+# -*- coding: utf-8 -*-
 
 import os
 from setuptools import find_packages, setup
@@ -10,25 +9,26 @@ def read(fname):
 
 
 setup(
-    name='mongoOP',
+    name='mongoop',
     version='0.0.1',
     author='Lujeni',
     author_email='julien@thebault.co',
-    description='',
+    description='Monitor and locate long running operations on MongoDB and automatically trigger specific actions for alerting and performance analysis.',
     long_description=read('README.rst'),
-    url='https://github.com/lujeni/mongoOP',
-    download_url='https://github.com/lujeni/mongoOP/tags',
+    url='https://github.com/lujeni/mongoop',
+    download_url='https://github.com/lujeni/mongoop/tags',
     license='BSD',
     platforms='any',
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests*']),
     include_package_data=True,
     install_requires=[
-        'pymongo==3.0.2',
         'gevent==1.0.2',
+        'pymongo==3.0.2',
     ],
+    tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'mongoop = mongoop.__main__:main',
+            'mongoop = mongoop.cli:main',
         ]
     },
     classifiers=[
