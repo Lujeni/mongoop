@@ -1,7 +1,12 @@
-#!/usr/bin/env python
-# vim: set fileencoding=utf-8
+# -*- coding: utf-8 -*-
+"""
+    mongoop.default_settings
+    ~~~~~~~~~~~~~~~~~~~~~~~~
 
-# DEFAULT MONGODB
+    :copyright: (c) 2015 by Lujeni.
+    :license: BSD, see LICENSE for more details.
+"""
+
 mongodb_host = 'localhost'
 
 mongodb_port = 27017
@@ -10,19 +15,9 @@ mongodb_credentials = None
 
 mongodb_options = None
 
-# DEFAULT MONGOOP
-mongoop_running_timeout = 120
+frequency = 10
 
-mongoop_frequency = 10
+quiet = False
 
-mongoop_killer = True
+triggers = {}
 
-mongoop_trigger = []
-
-# DEFAULT MONGOOP TRIGGER
-mongoop_trigger_email = {
-    'subject': 'Mongoop report',
-    'from': 'mongoop@localhost',
-    'to': 'root',
-    'smtp_host': 'localhost',
-}

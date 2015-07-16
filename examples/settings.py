@@ -1,12 +1,18 @@
 #!/usr/bin/env python
 # vim: set fileencoding=utf-8
 
-# MONGODB
-mongodb_credentials = {'name': 'foo', 'password': 'bar'}
-mongodb_options = {'ssl': True}
-
-# MONGOOP
-mongoop_running_timeout = 60
-mongoop_frequency = 30
-mongoop_killer = False
-mongoop_trigger = ['email']
+triggers = {
+    'killer': {'threshold': 120},
+    'email': {
+        'threshold': 60,
+        'subject': 'Mongoop report',
+        'from': 'mongoop@localhost',
+        'to': 'root',
+        'smtp_host': 'localhost',
+    },
+    'mongodb': {
+        'threshold': 5,
+        'database': 'mongoop',
+        'collection': 'history'
+    }
+}

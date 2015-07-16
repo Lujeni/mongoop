@@ -1,22 +1,20 @@
-Mongoop
-=======
+What is Mongoop ?
+=================
+Monitor and locate long running operations on MongoDB and automatically trigger specific actions for alerting and performance analysis.
 
-Introduction
-============
-This tool can be used to locate long running operations and trigger an specific action.
-
+Is it ready ?
+=============
+It's still not 1.0, missing some features.
 
 TODO
 ====
 ::
 
-  # v0.1
-  unittests
-
-  # v0.2
-  quiet logging option
-  web interface
-  monitoring trigger (NSCA)
+  trigger :: monitoring (NSCA)
+  trigger :: sentry
+  trigger :: mongodb :: custom operations field
+  trigger :: email :: use a template (jinja)
+  core :: python3
 
 Requirements
 ============
@@ -45,78 +43,59 @@ Using your own settings as well:
 Settings
 ========
 
-Your own settings is just a simple override of the default settings:
+Settings are a python file, you can override them easily.
 ::
 
-    # DEFAULT MONGODB
+    # default
     mongodb_host = 'localhost'
 
     mongodb_port = 27017
 
     mongodb_credentials = None
-    mongodb_credentials = {'name': 'foo', 'password': 'bar'}
 
     mongodb_options = None
-    mongodb_options = {'ssl': True}
 
-    # DEFAULT MONGOOP
-    mongoop_running_timeout = 120
+    frequency = 10
 
-    mongoop_frequency = 10
+    # the default threshold timeout is set to 60s
+    # when no triggers directive is provided.
+    triggers = {}
 
-    # let mongoop try to kill the slow operations.
-    mongoop_killer = True
-
-    # trigger action after detect an slow operation.
-    mongoop_trigger = []
-    mongoop_trigger = ['mongodb']
-    mongoop_trigger = ['email']
-
-    # DEFAULT MONGOOP TRIGGER
-    mongoop_trigger_email = {
-      'subject': 'Mongoop report',
-      'from': 'mongoop@localhost',
-      'to': 'root',
-      'smtp_host': 'localhost'
+    # sample of  triggers
+    triggers = {
+        'killer': {
+            'threshold': 120
+        },
+        'email': {
+            'threshold': 60,
+            'subject': 'Mongoop report',
+            'from': 'mongoop@localhost',
+            'to': 'root',
+            'smtp_host': 'localhost',
+        },
+        'mongodb': {
+            'threshold': 5,
+            'database': 'mongoop',
+            'collection': 'history'
+        }
     }
 
 Triggers
 ========
 
-=======
+Killer
+------
+Terminates an operation as specified by the operation ID.
+
 MongoDB
-=======
-
-introduction
-------------
-
+--------
 Insert the slow OP in a different database and do what you want.
 
-Currently, mongoop use the combo mongoop/history (database/collection).
+Currently, mongoop use the combo (database/collection).
 
 An index is create on the opid field.
 
-todo
-----
-
-::
-
-  database/collection combo must be a settings.
-  credentials on this database is not support.
-  choose/limit the operations fields which are inserted.
-
-=====
 Email
-=====
-
-introduction
-------------
-
+-----
 Send an email with each opid.
 
-todo
-----
-
-::
-
-  templating (jinja2)
