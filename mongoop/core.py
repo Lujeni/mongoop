@@ -11,6 +11,7 @@
 
 import logging
 
+from importlib import import_module
 from time import sleep
 
 from gevent import joinall
@@ -21,10 +22,6 @@ from pymongo.database import Database
 from pymongo.errors import ConnectionFailure
 from pymongo.errors import OperationFailure
 from pymongo.read_preferences import ReadPreference
-
-from mongoop.triggers import KillerTrigger
-from mongoop.triggers import EmailTrigger
-from mongoop.triggers import MongoTrigger
 
 
 logging.basicConfig(
@@ -80,18 +77,12 @@ class Mongoop(object):
             op_inprog = self._current_op()
 
             if op_inprog:
-                # TODO: use a loop instead of condition ?
-                if 'killer' in self.triggers:
-                    killer_trigger = KillerTrigger(mongoop=self, operations=op_inprog)
-                    threads.append(spawn(killer_trigger))
-
-                if 'mongodb' in self.triggers:
-                    mongodb_trigger = MongoTrigger(mongoop=self, operations=op_inprog)
-                    threads.append(spawn(mongodb_trigger))
-
-                if 'email' in self.triggers:
-                    email_trigger = EmailTrigger(mongoop=self, operations=op_inprog)
-                    threads.append(spawn(email_trigger))
+                for trigger_name in self.triggers.keys():
+                    trigger_module = import_module('mongoop.triggers.{}'.format(trigger_name))
+                    trigger_class = getattr(trigger_module, 'MongoopTrigger')
+                    trigger = trigger_class(trigger_name=trigger_name,
+                                            mongoop=self, operations=op_inprog)
+                    threads.append(spawn(trigger))
 
             threads.append(spawn(sleep, self.frequency))
             joinall(threads)
