@@ -1,8 +1,11 @@
-#!/usr/bin/env python
-# vim: set fileencoding=utf-8
+# -*- coding: utf-8 -*-
 
 triggers = {
-    'killer': {'threshold': 120},
+    'mongodb': {
+        'threshold': 5,
+        'database': 'mongoop',
+        'collection': 'history',
+    },
     'email': {
         'threshold': 60,
         'subject': 'Mongoop report',
@@ -10,9 +13,7 @@ triggers = {
         'to': 'root',
         'smtp_host': 'localhost',
     },
-    'mongodb': {
-        'threshold': 5,
-        'database': 'mongoop',
-        'collection': 'history'
+    'killer': {
+        'threshold': 120
     }
 }
