@@ -4,17 +4,7 @@ Monitor and locate long running operations on MongoDB and automatically trigger 
 
 Is it ready ?
 =============
-It's still not 1.0, missing some features.
-
-TODO
-====
-::
-
-  trigger :: monitoring (NSCA)
-  trigger :: sentry
-  trigger :: mongodb :: custom operations field
-  trigger :: email :: use a template (jinja)
-  core :: python3
+It's still not 1.0 but enought mature to test on your infrastructure.
 
 Requirements
 ============
@@ -29,7 +19,7 @@ This code has been run on Python 2.7
 Usage
 =====
 
-Currently, only a cli tool is available:
+Currently, mongoop is a simple cli tool:
 ::
 
     mongoop
