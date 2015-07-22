@@ -17,7 +17,4 @@ mongodb_options = None
 
 frequency = 10
 
-quiet = False
-
 triggers = {}
-
