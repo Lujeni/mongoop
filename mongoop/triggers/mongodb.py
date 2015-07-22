@@ -11,7 +11,6 @@ import logging
 
 from pymongo.database import Database
 from pymongo import DESCENDING
-from pymongo.errors import DuplicateKeyError
 
 from mongoop.triggers import BaseTrigger
 
@@ -37,10 +36,8 @@ class MongoopTrigger(BaseTrigger):
             super(MongoopTrigger, self).run(*args, **kwargs)
 
             self.collection.insert_many(self.operations)
-        except DuplicateKeyError as e:
-            logging.debug('op already trigger :: {}'.format(e))
-        except Exception as e:
-            logging.error('unable to run :: {} :: {}'.format(self.__class__.__name__, e))
+        except Exception:
             return False
         else:
+            logging.info('run :: MongoopTrigger :: bulk insert {} operations'.format(len(self.operations)))
             return True

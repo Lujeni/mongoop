@@ -11,6 +11,6 @@
       - use a template (jinja)
 
 - core:
-  -python3
-
+  - python3
+  - action is trigger once
 
