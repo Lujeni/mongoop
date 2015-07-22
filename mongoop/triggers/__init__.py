@@ -21,10 +21,11 @@ class BaseTrigger(object):
     def __init__(self, trigger_name, mongoop, operations):
         self.trigger_name = trigger_name
         self.mongoop = mongoop
-        self.operations = operations
+        self.mix_operations = operations
+        self.trigger_threshold = self.mongoop.triggers[self.trigger_name].get('threshold')
 
     def pre_run(self, *args, **kwargs):
-        pass
+        self.operations = [op for op in self.mix_operations if op['secs_running'] >= self.trigger_threshold]
 
     def post_run(self, *args, **kwargs):
         pass
@@ -34,5 +35,6 @@ class BaseTrigger(object):
 
     def __call__(self, *args, **kwargs):
         self.pre_run(*args, **kwargs)
-        self.run(*args, **kwargs)
-        self.post_run(*args, **kwargs)
+        if self.operations:
+            self.run(*args, **kwargs)
+            self.post_run(*args, **kwargs)
