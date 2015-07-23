@@ -6,19 +6,18 @@ Is it ready ?
 =============
 It's still not 1.0 but enought mature to test on your infrastructure.
 
-Requirements
-============
+Documentation
+=============
+Up to date documentation:
 
-This code has been run on Python 2.7
-::
+- `See the wiki <https://github.com/lujeni/mongoop/wiki>`_
 
-  # install by the setup
-  pymongo==3.0.2
-  gevent==1.0.2
+Learn how to write your own triggers:
+
+- `Write your own triggers <https://github.com/lujeni/mongoop/wiki/Write-your-own-triggers>`_
 
 Usage
 =====
-
 Currently, mongoop is a simple cli tool:
 ::
 
@@ -32,7 +31,6 @@ Using your own settings as well:
 
 Settings
 ========
-
 Settings are a python file, you can override them easily.
 ::
 
@@ -69,6 +67,34 @@ Settings are a python file, you can override them easily.
             'collection': 'history'
         }
     }
+
+
+Requirements
+============
+This code has been run on Python 2.7
+::
+
+  # install by the setup
+  pymongo==3.0.2
+  gevent==1.0.2
+
+
+Installation
+============
+Pypi
+----
+Using pip:
+::
+
+    $ pip install mongoop
+
+Gentoo Linux
+------------
+Using emerge (very soon):
+::
+
+    $ sudo emerge -a mongoop
+
 
 Triggers
 ========

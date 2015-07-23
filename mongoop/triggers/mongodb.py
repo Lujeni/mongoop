@@ -37,6 +37,7 @@ class MongoopTrigger(BaseTrigger):
 
             self.collection.insert_many(self.operations)
         except Exception:
+            # TODO: logging
             return False
         else:
             logging.info('run :: MongoopTrigger :: bulk insert {} operations'.format(len(self.operations)))

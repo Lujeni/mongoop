@@ -19,19 +19,26 @@ logging.basicConfig(
 class BaseTrigger(object):
 
     def __init__(self, trigger_name, mongoop, operations):
+        """
+        :param str trigger_name: x
+        :param object mongoop: see mongoop.core.Mongoop
+        :param list operations: all slow operations detected
+        """
         self.trigger_name = trigger_name
         self.mongoop = mongoop
         self.mix_operations = operations
         self.trigger_threshold = self.mongoop.triggers[self.trigger_name].get('threshold')
 
     def pre_run(self, *args, **kwargs):
+        """ Filter the operations which match the trigger threshold.
+        """
         self.operations = [op for op in self.mix_operations if op['secs_running'] >= self.trigger_threshold]
 
     def post_run(self, *args, **kwargs):
         pass
 
     def run(self, *args, **kwargs):
-        logging.info('run :: {}'.format(self.trigger_name))
+        pass
 
     def __call__(self, *args, **kwargs):
         self.pre_run(*args, **kwargs)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
     mongoop.cli
-    ~~~~~~~~~
+    ~~~~~~~~~~~
 
     A simple command line application to run mongoop.
 
