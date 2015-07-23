@@ -24,6 +24,7 @@ setup(
     install_requires=[
         'gevent==1.0.2',
         'pymongo==3.0.2',
+        'pynsca==1.5',
     ],
     tests_require=['pytest'],
     entry_points={
