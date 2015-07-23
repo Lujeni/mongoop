@@ -27,9 +27,9 @@ class MongoopTrigger(BaseTrigger):
                 opid = operation['opid']
                 result = self.mongoop.db.get_collection('$cmd.sys.killop').find_one(
                     {'op': opid})
-                logging.info('run :: {} :: {} {}'.format(self.__class__.__name__, result.get('info', 'op'), opid))
+                logging.info('run :: {} :: {} {}'.format(self.trigger_name, result.get('info', 'op'), opid))
         except Exception as e:
-            logging.error('unable to run :: {} :: {}'.format(self.__class__.__name__, e))
+            logging.error('unable to run :: {} :: {}'.format(self.trigger_name, e))
             return False
         else:
             return True

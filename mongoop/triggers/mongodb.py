@@ -24,8 +24,8 @@ class MongoopTrigger(BaseTrigger):
     def __init__(self, *args, **kwargs):
         super(MongoopTrigger, self).__init__(*args, **kwargs)
 
-        database = self.mongoop.triggers['mongodb'].get('database', 'mongoop')
-        collection = self.mongoop.triggers['mongodb'].get('collection', 'history')
+        database = self.params.get('database', 'mongoop')
+        collection = self.params.get('collection', 'history')
 
         self.db = Database(self.mongoop.conn, database)
         self.collection = self.db.get_collection(collection)
@@ -40,5 +40,5 @@ class MongoopTrigger(BaseTrigger):
             # TODO: logging
             return False
         else:
-            logging.info('run :: MongoopTrigger :: bulk insert {} operations'.format(len(self.operations)))
+            logging.info('run :: {} :: bulk insert {} operations'.format(self.trigger_name, len(self.operations)))
             return True

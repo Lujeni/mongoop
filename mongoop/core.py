@@ -11,6 +11,7 @@
 
 import logging
 
+from collections import defaultdict
 from importlib import import_module
 from time import sleep
 
@@ -34,36 +35,35 @@ class Mongoop(object):
                  mongodb_options, frequency, triggers):
         try:
             # mongodb
-            self.mongodb_host = mongodb_host
-            self.mongodb_port = mongodb_port
-            self.mongodb_credentials = mongodb_credentials or {}
-            self.mongodb_options = mongodb_options or {}
+            self._mongodb_host = mongodb_host
+            self._mongodb_port = mongodb_port
+            self._mongodb_credentials = mongodb_credentials or {}
+            self._mongodb_options = mongodb_options or {}
 
             # mongoop triggers
-            self.already_process = []
-            self.frequency = frequency
+            self._frequency = frequency
+            self.opid_by_trigger = defaultdict(set)
             self.triggers = triggers or {}
-            if self.triggers:
-                self.threshold_timeout = min([v['threshold'] for v in self.triggers.values()])
-            else:
-                self.threshold_timeout = 60
 
-            self.slow_query = {
-                'secs_running': {'$gte': self.threshold_timeout},
+            self._threshold_timeout = 60
+            if self.triggers:
+                self._threshold_timeout = min([v['threshold'] for v in self.triggers.values()])
+
+            self._slow_query = {
+                'secs_running': {'$gte': self._threshold_timeout},
                 'op': {'$ne': 'none'},
-                'opid': {'$nin': self.already_process}
             }
 
             self.conn = MongoClient(
-                host=self.mongodb_host,
-                port=self.mongodb_port,
+                host=self._mongodb_host,
+                port=self._mongodb_port,
                 read_preference=ReadPreference.PRIMARY,
                 serverSelectionTimeoutMS=5000,
-                **self.mongodb_options
+                **self._mongodb_options
             )
             self.db = Database(self.conn, 'admin')
-            if self.mongodb_credentials:
-                self.db.authenticate(**self.mongodb_credentials)
+            if self._mongodb_credentials:
+                self.db.authenticate(**self._mongodb_credentials)
         except TypeError as e:
             logging.error('unable to authenticate to admin database :: {}'.format(e))
         except OperationFailure as e:
@@ -84,7 +84,7 @@ class Mongoop(object):
                                             mongoop=self, operations=op_inprog)
                     threads.append(spawn(trigger))
 
-            threads.append(spawn(sleep, self.frequency))
+            threads.append(spawn(sleep, self._frequency))
             joinall(threads)
 
     def _current_op(self):
@@ -93,9 +93,8 @@ class Mongoop(object):
         try:
             op_inprog = {}
             coll = self.db.get_collection("$cmd.sys.inprog")
-            result = coll.find_one(self.slow_query)
+            result = coll.find_one(self._slow_query)
             op_inprog = result.get('inprog', {})
-            [self.already_process.append(op) for op in op_inprog]
         except Exception as e:
             logging.error('unable to retrieve op :: {}'.format(e))
         else:

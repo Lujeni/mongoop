@@ -6,6 +6,17 @@ triggers = {
         'database': 'mongoop',
         'collection': 'history',
     },
+    'nsca': {
+        'threshold': 5,
+        'monitoring_server': 'nagios.foo.com',
+        'service': 'mongoop',
+    },
+    'nsca': {
+        'threshold': 60,
+        'monitoring_server': 'nagios.foo.com',
+        'service': 'mongoop',
+        'status': 'critical',
+    },
     'email': {
         'threshold': 60,
         'subject': 'Mongoop report',

@@ -25,21 +25,20 @@ class MongoopTrigger(BaseTrigger):
         try:
             super(MongoopTrigger, self).run(*args, **kwargs)
 
-            email = self.mongoop.triggers['email']
-            msg_from = email['from']
-            msg_to = email['to']
+            msg_from = self.params['from']
+            msg_to = self.params['to']
 
             msg = MIMEText(' \n'.join(['opipd: {}'.format(str(o['opid']))
                                        for o in self.operations]))
-            msg['Subject'] = email['subject']
+            msg['Subject'] = self.params['subject']
             msg['From'] = msg_from
             msg['To'] = msg_to
 
-            smtp = SMTP(host=email['smtp_host'], timeout=10)
+            smtp = SMTP(host=self.params['smtp_host'], timeout=10)
             smtp.sendmail(msg_from, [msg_to], msg.as_string())
             smtp.quit()
         except Exception as e:
-            logging.error('unable to run :: {} :: {}'.format(self.__class__.__name__, e))
+            logging.error('unable to run :: {} :: {}'.format(self.trigger_name, e))
             return False
         else:
             return True
