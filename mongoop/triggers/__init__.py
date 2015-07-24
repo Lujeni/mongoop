@@ -33,7 +33,7 @@ class BaseTrigger(object):
         """
         self.trigger_name = trigger_name
         self.mongoop = mongoop
-        self.params = self.mongoop.triggers[self.trigger_name]
+        self.params = self.mongoop.triggers.get(self.trigger_name, {})
 
         self._mix_operations = operations
         self.operations = []
