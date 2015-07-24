@@ -27,7 +27,7 @@ class BaseTrigger(object):
         """ Common stuff for the trigger.
 
         Args:
-            trigger_name (str): .
+            trigger_name (str): the name of the current triger.
             mongoop (object): see mongoo.core
             operations (list): all slow operatations
         """
