@@ -1,6 +1,5 @@
 - trigger:
   new:
-    - monitoring (NSCA)
     - sentry
     - IRC
 
@@ -12,5 +11,4 @@
 
 - core:
   - python3
-  - doc to write a trigger
 

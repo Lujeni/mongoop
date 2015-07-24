@@ -25,7 +25,7 @@ class MongoopTrigger(BaseTrigger):
 
     def __init__(...):
         """
-        NO NEED TO IMPLEMENTED in your trigger
+        NO NEED TO IMPLEMENT in your trigger.
 
         more details: mongoop.triggers.__init__.BaseTrigger.__call__
         """
@@ -33,7 +33,7 @@ class MongoopTrigger(BaseTrigger):
 
     def __call__(...):
         """
-        NO NEED TO IMPLEMENTED in your trigger
+        NO NEED TO IMPLEMENT in your trigger.
 
         more details: mongoop.triggers.__init__.BaseTrigger.__call__
         """
@@ -41,10 +41,10 @@ class MongoopTrigger(BaseTrigger):
 
     def pre_run(self, *args, **kwargs):
         """
-        OPTIONAL TO IMPLEMENTED
-        IF IMPLEMENTED:
-            - necessary to call the parent method (super)
-            - returns True to continue the process (run, post_run)
+        OPTIONAL task.
+
+        Necessary to call the parent method (super).
+        Returns True to continue the process (run, post_run).
 
         more details: mongoop.triggers.__init__.BaseTrigger.pre_run
         """
@@ -60,7 +60,7 @@ class MongoopTrigger(BaseTrigger):
 
     def run(self):
         """ Main function, do what you want.
-            Returns True to continue the process (post_run)
+            Returns True to continue the process (post_run).
         """
         try:
             print "main task"
@@ -70,11 +70,11 @@ class MongoopTrigger(BaseTrigger):
         else:
             return True
 
-    def post_run(self, *args, **kwargs):
+    def post_run(self, * args, **kwargs):
         """
-        OPTIONAL TO IMPLEMENTED
-        IF IMPLEMENTED:
-            - necessary to call the parent method (super)
+        OPTIONAL task
+
+        Necessary to call the parent method (super)
 
         more details: mongoop.triggers.__init__.BaseTrigger.post_run
         """

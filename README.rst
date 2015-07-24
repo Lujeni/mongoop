@@ -88,8 +88,7 @@ This code has been run on Python 2.7
   # install by the setup
   gevent==1.0.2
   pymongo==3.0.2
-  pynsca==1.5  pymongo==3.0.2
-
+  pynsca==1.5
 
 Installation
 ============
