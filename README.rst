@@ -51,8 +51,21 @@ Settings are a python file, you can override them easily.
 
     # sample of  triggers
     triggers = {
-        'killer': {
-            'threshold': 120
+        'mongodb': {
+            'threshold': 5,
+            'database': 'mongoop',
+            'collection': 'history',
+        },
+        'nsca': {
+            'threshold': 5,
+            'monitoring_server': 'nagios.foo.com',
+            'service': 'mongoop',
+        },
+        'nsca': {
+            'threshold': 60,
+            'monitoring_server': 'nagios.foo.com',
+            'service': 'mongoop',
+            'status': 'critical',
         },
         'email': {
             'threshold': 60,
@@ -61,10 +74,8 @@ Settings are a python file, you can override them easily.
             'to': 'root',
             'smtp_host': 'localhost',
         },
-        'mongodb': {
-            'threshold': 5,
-            'database': 'mongoop',
-            'collection': 'history'
+        'killer': {
+            'threshold': 120
         }
     }
 
@@ -75,8 +86,9 @@ This code has been run on Python 2.7
 ::
 
   # install by the setup
-  pymongo==3.0.2
   gevent==1.0.2
+  pymongo==3.0.2
+  pynsca==1.5  pymongo==3.0.2
 
 
 Installation

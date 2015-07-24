@@ -21,10 +21,8 @@ logging.basicConfig(
 
 class MongoopTrigger(BaseTrigger):
 
-    def run(self, *args, **kwargs):
+    def run(self):
         try:
-            super(MongoopTrigger, self).run(*args, **kwargs)
-
             msg_from = self.params['from']
             msg_to = self.params['to']
 
@@ -42,4 +40,3 @@ class MongoopTrigger(BaseTrigger):
             return False
         else:
             return True
-

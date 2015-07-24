@@ -31,10 +31,8 @@ class MongoopTrigger(BaseTrigger):
         self.collection = self.db.get_collection(collection)
         self.collection.create_index([('opid', DESCENDING)], unique=True, background=True)
 
-    def run(self, *args, **kwargs):
+    def run(self):
         try:
-            super(MongoopTrigger, self).run(*args, **kwargs)
-
             self.collection.insert_many(self.operations)
         except Exception:
             # TODO: logging

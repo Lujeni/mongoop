@@ -17,12 +17,10 @@ logging.basicConfig(
 
 class MongoopTrigger(BaseTrigger):
 
-    def run(self, *args, **kwargs):
+    def run(self):
         """ Terminates an operation as specified by the operation ID.
         """
         try:
-            super(MongoopTrigger, self).run(*args, **kwargs)
-
             for operation in self.operations:
                 opid = operation['opid']
                 result = self.mongoop.db.get_collection('$cmd.sys.killop').find_one(

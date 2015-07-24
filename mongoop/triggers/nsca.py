@@ -11,6 +11,8 @@ import logging
 
 from socket import gethostname
 
+import pynsca
+
 from mongoop.triggers import BaseTrigger
 
 logging.basicConfig(
@@ -27,13 +29,13 @@ class MongoopTrigger(BaseTrigger):
 
             host = self.params.get('host') or gethostname()
             service = self.params['service']
-            status = getattr(pynsca, upper(self.params.get('status', 'warning')))
+            status = getattr(pynsca, self.params.get('status', 'warning').upper())
             opids = '|'.join([o['opid'] for o in self.operations])
 
-            notif = NSCANotifier(self.params['monitoring_server'])
+            notif = pynsca.NSCANotifier(self.params['monitoring_server'])
             notif.svc_result(host, service, status, opids)
         except Exception as e:
             logging.error('unable to run :: {} :: {}'.format(self.trigger_name, e))
             return False
-        else
+        else:
             return True

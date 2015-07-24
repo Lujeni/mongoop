@@ -20,19 +20,19 @@ class MongoopTrigger(BaseTrigger):
     def pre_run(self, *args, **kwargs):
         try:
             super(MongoopTrigger, self).run(*args, **kwargs)
+
             print "i am a skeleton pre_run"
         except Exception as e:
-            logging.error('unable to pre_run :: {} :: {}'.format(self.__class__.__name__, e))
+            logging.error('unable to pre_run :: {} :: {}'.format(self.trigger_name, e))
             return False
         else:
             return True
 
-    def run(self, *args, **kwargs):
+    def run(self):
         try:
-            super(MongoopTrigger, self).run(*args, **kwargs)
             print "i am a skeleton"
         except Exception as e:
-            logging.error('unable to run :: {} :: {}'.format(self.__class__.__name__, e))
+            logging.error('unable to run :: {} :: {}'.format(self.trigger_name, e))
             return False
         else:
             return True
@@ -40,9 +40,10 @@ class MongoopTrigger(BaseTrigger):
     def post_run(self, *args, **kwargs):
         try:
             super(MongoopTrigger, self).run(*args, **kwargs)
+
             print "i am a skeleton post_run"
         except Exception as e:
-            logging.error('unable to post_run :: {} :: {}'.format(self.__class__.__name__, e))
+            logging.error('unable to post_run :: {} :: {}'.format(self.trigger_name, e))
             return False
         else:
             return True
