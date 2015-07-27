@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name='mongoop',
-    version='0.0.5',
+    version='0.0.6',
     author='Lujeni',
     author_email='julien@thebault.co',
     description='Monitor and locate long running operations on MongoDB and automatically trigger specific actions for alerting and performance analysis.',
