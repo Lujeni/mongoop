@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <title>Mongoop report</title>
+  </head>
+  <body>
+    {% for operation in operations %}
+    <b><u>Found 1 slow operation:</u></b>
+    <dl>
+      {% for key, value in operation.iteritems() %}
+            <dt><b>{{ key }}</b></dt>
+            <dd>{{ value }}</dd>
+      {% endfor %}
+    </dl>
+    <br/>
+    <br/>
+    {% endfor %}
+  </body>
+</html>

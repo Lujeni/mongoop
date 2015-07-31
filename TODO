@@ -6,8 +6,6 @@
   update:
     mongodb:
       - custom operations field
-    email:
-      - use a template (jinja)
 
 - core:
   - python3

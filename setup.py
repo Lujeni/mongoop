@@ -22,6 +22,7 @@ setup(
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
     install_requires=[
+        'Jinja2==2.8',
         'gevent==1.0.2',
         'pymongo==3.0.2',
         'pynsca==1.5',
