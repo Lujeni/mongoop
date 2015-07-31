@@ -24,6 +24,14 @@ triggers = {
         'to': 'root',
         'smtp_host': 'localhost',
     },
+    'email': {
+        'threshold': 60,
+        'subject': 'Mongoop report',
+        'from': 'mongoop@localhost',
+        'to': 'sysadmin',
+        'smtp_host': 'smtp.gmail.com:587',
+        'gmail': {'user': 'foo', 'password': 'bar'}
+    },
     'killer': {
         'threshold': 120
     }
