@@ -31,8 +31,8 @@ logging.basicConfig(
 
 class Mongoop(object):
 
-    def __init__(self, mongodb_host, mongodb_port, mongodb_credentials,
-                 mongodb_options, frequency, triggers):
+    def __init__(self, mongodb_host, mongodb_port, mongodb_credentials=None,
+                 mongodb_options=None, frequency=0, triggers=None):
         try:
             # mongodb
             self._mongodb_host = mongodb_host
@@ -41,7 +41,7 @@ class Mongoop(object):
             self._mongodb_options = mongodb_options or {}
 
             # mongoop triggers
-            self._frequency = frequency
+            self._frequency = frequency or 30
             self.opid_by_trigger = defaultdict(set)
             self.triggers = triggers or {}
 
