@@ -12,6 +12,10 @@ Up to date documentation:
 
 - `See the wiki <https://github.com/lujeni/mongoop/wiki>`_
 
+List of avaiable triggers:
+
+- `List of available triggers <https://github.com/lujeni/mongoop/wiki/avaiable-triggers>`
+
 Learn how to write your own triggers:
 
 - `Write your own triggers <https://github.com/lujeni/mongoop/wiki/Write-your-own-triggers>`_
@@ -62,17 +66,23 @@ Settings are a python file, you can override them easily.
             'service': 'mongoop',
         },
         'nsca': {
-            'threshold': 60,
+            'threshold': 30,
             'monitoring_server': 'nagios.foo.com',
             'service': 'mongoop',
             'status': 'critical',
         },
         'email': {
-            'threshold': 60,
+            'threshold': 30,
             'subject': 'Mongoop report',
             'from': 'mongoop@localhost',
             'to': 'root',
             'smtp_host': 'localhost',
+        },
+        'sentry': {
+            'threshold': 60,
+            'dsn': 'https://898weqe899qweqeq8:wqeqw8888@app.getsentry.com/76885',
+            'message': 'mongoop slow operation :: {opid}',
+            'level': 'info',
         },
         'killer': {
             'threshold': 120
@@ -106,24 +116,3 @@ Using emerge (very soon):
 ::
 
     $ sudo emerge -a mongoop
-
-
-Triggers
-========
-
-Killer
-------
-Terminates an operation as specified by the operation ID.
-
-MongoDB
---------
-Insert the slow OP in a different database and do what you want.
-
-Currently, mongoop use the combo (database/collection).
-
-An index is created on the opid field.
-
-Email
------
-Send an email with each opid.
-

@@ -32,6 +32,12 @@ triggers = {
         'smtp_host': 'smtp.gmail.com:587',
         'gmail': {'user': 'foo', 'password': 'bar'}
     },
+    'sentry': {
+        'threshold': 80,
+        'dsn': 'https://898weqe899qweqeq8:wqeqw8888@app.getsentry.com/76885',
+        'message': 'mongoop slow operation :: {opid}',
+        'level': 'info',
+    },
     'killer': {
         'threshold': 120
     }

@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name='mongoop',
-    version='0.0.7',
+    version='0.0.8',
     author='Lujeni',
     author_email='julien@thebault.co',
     description='Monitor and locate long running operations on MongoDB and automatically trigger specific actions for alerting and performance analysis.',
@@ -27,7 +27,10 @@ setup(
         'pymongo==3.0.2',
         'pynsca==1.5',
     ],
-    tests_require=['pytest'],
+    extra_requires={
+        'tests': ['pytest'],
+        'sentry': ['raven==5.5.0'],
+    },
     entry_points={
         'console_scripts': [
             'mongoop = mongoop.cli:main',
