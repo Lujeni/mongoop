@@ -27,7 +27,10 @@ setup(
         'pymongo==3.0.2',
         'pynsca==1.5',
     ],
-    tests_require=['pytest'],
+    extra_requires={
+        'tests': ['pytest'],
+        'sentry': ['raven==5.5.0'],
+    },
     entry_points={
         'console_scripts': [
             'mongoop = mongoop.cli:main',

@@ -84,4 +84,4 @@ class BaseTrigger(object):
     def run(self):
         """ Must be trigger side implemented.
         """
-        raise TriggerSideImplemented
+        raise TriggerSideImplemented("don't call the parent method")

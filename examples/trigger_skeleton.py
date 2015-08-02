@@ -23,7 +23,7 @@ class MongoopTrigger(BaseTrigger):
     The MongoopTrigger class name is mandatory.
     """
 
-    def __init__(...):
+    def __init__(self, *args, **kwargs):
         """
         NO NEED TO IMPLEMENT in your trigger.
 
@@ -31,7 +31,7 @@ class MongoopTrigger(BaseTrigger):
         """
         pass
 
-    def __call__(...):
+    def __call__(self, *args, **kwargs):
         """
         NO NEED TO IMPLEMENT in your trigger.
 

@@ -8,10 +8,6 @@ def base_mongoop_arguments():
     return {
         'mongodb_host': 'localhost',
         'mongodb_port': 27017,
-        'mongodb_credentials': None,
-        'mongodb_options': None,
-        'frequency': 60,
-        'triggers': {}
     }
 
 
