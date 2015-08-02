@@ -14,7 +14,7 @@ Up to date documentation:
 
 List of avaiable triggers:
 
-- `List of available triggers <https://github.com/lujeni/mongoop/wiki/avaiable-triggers>`
+- `List of available triggers <https://github.com/lujeni/mongoop/wiki/Available-Triggers>`_
 
 Learn how to write your own triggers:
 
