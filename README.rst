@@ -12,9 +12,11 @@ Up to date documentation:
 
 - `See the wiki <https://github.com/lujeni/mongoop/wiki>`_
 
-- `Settings file <https://github.com/lujeni/mongoop/Settings-File>`_
+Configure your Mongoop settings:
 
-List of avaiable triggers:
+- `Settings file <https://github.com/lujeni/mongoop/wiki/Settings-File>`_
+
+List of available triggers:
 
 - `List of available triggers <https://github.com/lujeni/mongoop/wiki/Available-Triggers>`_
 
@@ -26,7 +28,6 @@ Usage
 =====
 Currently, mongoop is a simple cli tool:
 ::
-    # without triggers
     $ mongoop
 
 
@@ -44,6 +45,7 @@ This code has been run on Python 2.7
 
   # install by the setup
   Jinja2==2.8
+  PyYAML==3.11
   gevent==1.0.2
   pymongo==3.0.2
   pynsca==1.5
