@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+mongodb_host = 'localhost'
+
+mongodb_port = 27017
+
+mongodb_credentials = None
+
+mongodb_options = None
+
+frequency = 10
 
 triggers = {
     'mongodb': {

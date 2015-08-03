@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name='mongoop',
-    version='0.0.8',
+    version='0.0.9',
     author='Lujeni',
     author_email='julien@thebault.co',
     description='Monitor and locate long running operations on MongoDB and automatically trigger specific actions for alerting and performance analysis.',
@@ -23,6 +23,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'Jinja2==2.8',
+        'PyYAML==3.11',
         'gevent==1.0.2',
         'pymongo==3.0.2',
         'pynsca==1.5',
