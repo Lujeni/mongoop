@@ -9,6 +9,8 @@ mongodb_options = None
 
 frequency = 10
 
+threshold_timeout = 60
+
 triggers = {
     'mongodb': {
         'threshold': 5,

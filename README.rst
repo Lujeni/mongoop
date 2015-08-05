@@ -4,7 +4,7 @@ Monitor and locate long running operations on MongoDB and automatically trigger 
 
 Is it ready ?
 =============
-It's still not 1.0 but enought mature to test on your infrastructure.
+It's still not 1.0 but enougth mature to test on your infrastructure.
 
 Documentation
 =============

@@ -45,6 +45,7 @@ def main():
             mongodb_options=s.mongodb_options,
             frequency=s.frequency,
             triggers=s.triggers,
+            threshold_timeout=s.threshold_timeout,
         )
         mongoop()
     except KeyboardInterrupt:

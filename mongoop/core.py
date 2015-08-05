@@ -32,7 +32,7 @@ logging.basicConfig(
 class Mongoop(object):
 
     def __init__(self, mongodb_host, mongodb_port, mongodb_credentials=None,
-                 mongodb_options=None, frequency=0, triggers=None):
+                 mongodb_options=None, frequency=0, triggers=None, threshold_timeout=60):
         try:
             # mongodb
             self._mongodb_host = mongodb_host
@@ -45,7 +45,7 @@ class Mongoop(object):
             self.opid_by_trigger = defaultdict(set)
             self.triggers = triggers or {}
 
-            self._threshold_timeout = 60
+            self._threshold_timeout = threshold_timeout
             if self.triggers:
                 self._threshold_timeout = min([v['threshold'] for v in self.triggers.values()])
 

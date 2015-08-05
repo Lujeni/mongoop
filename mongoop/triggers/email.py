@@ -38,6 +38,7 @@ class MongoopTrigger(BaseTrigger):
             autoescape=True,
             loader=FileSystemLoader(os.path.join(PATH, 'templates')),
             trim_blocks=False)
+        self._jinja_template = self._jinja_env.get_template('email.j2')
 
     def run(self):
         try:
@@ -45,7 +46,6 @@ class MongoopTrigger(BaseTrigger):
             msg_to = self.params['to']
             gmail = self.params.get('gmail')
 
-            self._jinja_template = self._jinja_env.get_template('email.j2')
             msg = MIMEText(self._jinja_template.render(operations=self.operations), 'plain')
             msg['Subject'] = self.params['subject']
             msg['From'] = msg_from
