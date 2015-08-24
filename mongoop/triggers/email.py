@@ -46,7 +46,7 @@ class MongoopTrigger(BaseTrigger):
             msg_to = self.params['to']
             gmail = self.params.get('gmail')
 
-            msg = MIMEText(self._jinja_template.render(operations=self.operations), 'plain')
+            msg = MIMEText(self._jinja_template.render(operations=self.operations), 'html')
             msg['Subject'] = self.params['subject']
             msg['From'] = msg_from
             msg['To'] = msg_to
