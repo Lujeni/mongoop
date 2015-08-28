@@ -7,5 +7,4 @@
       - custom operations field
 
 - core:
-  - python3
   - convert the micro_s
