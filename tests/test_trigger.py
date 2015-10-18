@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import sys
+
 import pytest
 
 
@@ -48,7 +50,7 @@ def mongodb_mongoop_trigger(base_mongoop):
 
 @pytest.fixture
 def nsca_mongoop_trigger(base_mongoop):
-    from mongoop.triggers.mongodb import MongoopTrigger
+    from mongoop.triggers.nsca import MongoopTrigger
 
     return MongoopTrigger(trigger_name='pytest', mongoop=base_mongoop, operations={})
 
@@ -92,6 +94,7 @@ def test_killer_trigger_public_api(killer_mongoop_trigger):
     assert hasattr(killer_mongoop_trigger, 'operations')
 
 
+@pytest.mark.skipif(True, reason='need mongodb instance')
 def test_mongodb_trigger_public_api(mongodb_mongoop_trigger):
     assert hasattr(mongodb_mongoop_trigger, 'trigger_name')
     assert hasattr(mongodb_mongoop_trigger, 'mongoop')
@@ -102,7 +105,7 @@ def test_mongodb_trigger_public_api(mongodb_mongoop_trigger):
     assert hasattr(mongodb_mongoop_trigger, 'db')
     assert hasattr(mongodb_mongoop_trigger, 'collection')
 
-
+@pytest.mark.skipif(sys.version_info > (3,), reason="pynsca is not python3 compliance")
 def test_nsca_trigger_public_api(nsca_mongoop_trigger):
     assert hasattr(nsca_mongoop_trigger, 'trigger_name')
     assert hasattr(nsca_mongoop_trigger, 'mongoop')
