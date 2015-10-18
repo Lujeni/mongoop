@@ -1,3 +1,7 @@
+.. image:: https://travis-ci.org/Lujeni/mongoop.svg?branch=master
+    :target: https://travis-ci.org/Lujeni/mongoop
+.. image:: https://img.shields.io/pypi/dm/mongoop.svg
+
 What is Mongoop ?
 =================
 Monitor and locate long running operations on MongoDB and automatically trigger specific actions for alerting and performance analysis.
