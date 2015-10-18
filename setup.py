@@ -1,12 +1,47 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
 from setuptools import find_packages, setup
+from setuptools.command.test import test as TestCommand
 
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
+
+class PyTest(TestCommand):
+    user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
+
+    def initialize_options(self):
+        TestCommand.initialize_options(self)
+        self.pytest_args = []
+
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        #import here, cause outside the eggs aren't loaded
+        import pytest
+        errno = pytest.main(self.pytest_args)
+        sys.exit(errno)
+
+
+install_requires = [
+    'Jinja2==2.8',
+    'PyYAML==3.11',
+    'gevent==1.1b3',
+    'pymongo==3.0.2',
+    'pynsca==1.5',
+]
+
+tests_require = [
+    'pytest-cov==2.2.0',
+    'pytest-pep8==1.0.6',
+    'pytest==2.8.2',
+]
 
 setup(
     name='mongoop',
@@ -21,15 +56,10 @@ setup(
     platforms='any',
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
-    install_requires=[
-        'Jinja2==2.8',
-        'PyYAML==3.11',
-        'gevent==1.1b3',
-        'pymongo==3.0.2',
-        'pynsca==1.5',
-    ],
+    install_requires=install_requires,
+    tests_require=tests_require,
+    cmdclass={'test': PyTest},
     extra_requires={
-        'tests': ['pytest'],
         'sentry': ['raven==5.5.0'],
     },
     entry_points={
