@@ -51,5 +51,12 @@ triggers = {
     },
     'killer': {
         'threshold': 120
+    },
+    'webhook': {
+        'threshold': 240,
+        'method': 'post',
+        'url': 'http://requestb.in/17qzafm1',
+        'params': {'fizz': 'buzz'},
+        'requests_params': {'verify': False},
     }
 }

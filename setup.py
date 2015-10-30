@@ -61,6 +61,7 @@ setup(
     cmdclass={'test': PyTest},
     extra_requires={
         'sentry': ['raven==5.5.0'],
+        'webhook': ['requests==2.8.1'],
     },
     entry_points={
         'console_scripts': [

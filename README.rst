@@ -62,6 +62,8 @@ Using pip:
 ::
 
     $ pip install mongoop
+    # Some trigger need extra requires to be used
+    $ pip install mongoop[sentry] # raven will be install
 
 Gentoo Linux
 ------------

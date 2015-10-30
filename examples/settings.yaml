@@ -43,3 +43,12 @@ triggers:
 
   killer:
     treshold: 120
+
+  webhook:
+    threshold: 240
+    method: get
+    url: https://httpbin.org/get
+    params:
+      show_env: 1
+    requests_params:
+      verify: False
