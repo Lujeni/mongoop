@@ -20,3 +20,5 @@ frequency = 10
 threshold_timeout = 60
 
 triggers = {}
+
+balancer = None

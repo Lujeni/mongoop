@@ -32,7 +32,7 @@ logging.basicConfig(
 class Mongoop(object):
 
     def __init__(self, mongodb_host, mongodb_port, mongodb_credentials=None,
-                 mongodb_options=None, frequency=0, triggers=None, threshold_timeout=60):
+                 mongodb_options=None, frequency=0, triggers=None, threshold_timeout=None, extra_checks=None):
         try:
             # mongodb
             self._mongodb_host = mongodb_host
@@ -45,7 +45,7 @@ class Mongoop(object):
             self.opid_by_trigger = defaultdict(set)
             self.triggers = triggers or {}
 
-            self._threshold_timeout = threshold_timeout
+            self._threshold_timeout = threshold_timeout or 60
             if self.triggers:
                 self._threshold_timeout = min([v['threshold'] for v in self.triggers.values()])
 
@@ -53,6 +53,9 @@ class Mongoop(object):
                 'secs_running': {'$gte': self._threshold_timeout},
                 'op': {'$ne': 'none'},
             }
+
+            # mongoop extra checks
+            self.extra_checks = extra_checks or {}
 
             self.conn = MongoClient(
                 host=self._mongodb_host,
@@ -84,6 +87,17 @@ class Mongoop(object):
                                             mongoop=self, operations=op_inprog)
                     threads.append(spawn(trigger))
 
+            # TODO: DRY the mongoop triggers.
+            if 'balancer' in self.extra_checks:
+                balancer = self.extra_checks['balancer']
+                if self._is_balancer_stopped() == balancer['enabled']:
+                    for trigger_name in balancer.get('triggers', []):
+                        trigger_module = import_module('mongoop.triggers.{}'.format(trigger_name))
+                        trigger_class = getattr(trigger_module, 'MongoopTriggerBalancer')
+                        trigger = trigger_class(trigger_name=trigger_name,
+                                                mongoop=self)
+                        threads.append(spawn(trigger))
+
             threads.append(spawn(sleep, self._frequency))
             joinall(threads)
 
@@ -101,3 +115,18 @@ class Mongoop(object):
             logging.info('found {} slow op'.format(len(op_inprog)))
         finally:
             return op_inprog
+
+    def _is_balancer_stopped(self):
+        """ Determine if the balancer is currently enabled or disabled.
+
+            Returns:
+                bool: False it's running, True otherwhise.
+        """
+        try:
+            if self.conn.config.settings.find_one({'_id': 'balancer', 'stopped': True}):
+                logging.info('balancer state :: stopped')
+                return True
+            logging.info('balancer state :: started')
+            return False
+        except Exception as e:
+            logging.error('unable to get the balancer state :: {}'.format(e))

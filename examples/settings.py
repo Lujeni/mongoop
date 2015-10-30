@@ -60,3 +60,16 @@ triggers = {
         'requests_params': {'verify': False},
     }
 }
+
+balancer = {
+    'enabled': False,
+    'triggers': {
+        'webhook': {
+            'threshold': 1,
+            'method': 'post',
+            'url': 'http://requestb.in/17qzafm1',
+            'params': {'fizz': 'buzz'},
+            'requests_params': {'verify': False},
+        }
+    }
+}

@@ -23,19 +23,19 @@ class TriggerSideImplemented(Exception):
 class BaseTrigger(object):
     """ Base to write a trigger.
     """
-    def __init__(self, trigger_name, mongoop, operations):
+    def __init__(self, trigger_name, mongoop, operations=None):
         """ Common stuff for the trigger.
 
         Args:
             trigger_name (str): the name of the current triger.
-            mongoop (object): see mongoo.core
-            operations (list): all slow operatations
+            mongoop (object): see mongoop.core.
+            operations (list): all slow operations.
         """
         self.trigger_name = trigger_name
         self.mongoop = mongoop
         self.params = self.mongoop.triggers.get(self.trigger_name, {})
 
-        self._mix_operations = operations
+        self._mix_operations = operations or []
         self.operations = []
 
     def __call__(self, *args, **kwargs):
@@ -84,4 +84,11 @@ class BaseTrigger(object):
     def run(self):
         """ Must be trigger side implemented.
         """
-        raise TriggerSideImplemented("don't call the parent method")
+        raise TriggerSideImplemented("don't call the parent method :: you must implement the run method")
+
+
+class BaseTriggerBalancer(BaseTrigger):
+
+    def __init__(self, *args, **kwargs):
+        super(BaseTriggerBalancer, self).__init__(*args, **kwargs)
+        self.params = self.mongoop.extra_checks['balancer']['triggers'].get(self.trigger_name, {})

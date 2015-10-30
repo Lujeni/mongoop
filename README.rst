@@ -4,7 +4,7 @@
 
 What is Mongoop ?
 =================
-Monitor and locate long running operations on MongoDB and automatically trigger specific actions for alerting and performance analysis.
+Monitor and locate long running operations on MongoDB and automatically trigger specific actions for alerting and performance analysis. Some fancy checks are available also.
 
 Is it ready ?
 =============
@@ -28,10 +28,15 @@ Learn how to write your own triggers:
 
 - `Write your own triggers <https://github.com/lujeni/mongoop/wiki/Write-your-own-triggers>`_
 
+Balancer check:
+
+- `Balancer check <https://github.com/lujeni/mongoop/wiki/Balancer-Check>`_
+
 Usage
 =====
 Currently, mongoop is a simple cli tool:
 ::
+
     $ mongoop
 
 

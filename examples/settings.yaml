@@ -18,18 +18,18 @@ triggers:
     collection: history
 
   nsca:
-    treshold: 5
+    threshold: 5
     monitoring_server: nagios.foo.com
     service: mongoop
 
   nsca:
-    treshold: 60
+    threshold: 60
     monitoring_server: nagios.foo.com
     service: mongoop
     status: critical
 
   email:
-    treshold: 60
+    threshold: 60
     subject: 'Mongoop report'
     from: 'mongoop@localhost'
     to: 'root'
@@ -42,7 +42,7 @@ triggers:
     level: info
 
   killer:
-    treshold: 120
+    threshold: 120
 
   webhook:
     threshold: 240
@@ -52,3 +52,14 @@ triggers:
       show_env: 1
     requests_params:
       verify: False
+
+balancer:
+  state: enabled
+  triggers:
+    webhook:
+      method: get
+      url: https://httpbin.org/get
+      params:
+        show_env: 1
+      requests_params:
+        verify: False
