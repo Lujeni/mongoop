@@ -1,6 +1,7 @@
 - trigger:
   new:
     - IRC
+    - web hooks
 
   update:
     mongodb:
@@ -8,3 +9,5 @@
 
 - core:
   - convert the micro_s
+  - remove gevent use generator
+  - support multiple hosts
