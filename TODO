@@ -1,7 +1,6 @@
 - trigger:
   new:
     - IRC
-    - web hooks
 
   update:
     mongodb:
