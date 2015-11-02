@@ -41,7 +41,7 @@ class BaseTrigger(object):
     def __call__(self, *args, **kwargs):
         """ Main runner.
         """
-        if self.pre_run(*args, **kwargs) and self.operations:
+        if self.pre_run(*args, **kwargs):
             if self.run(*args, **kwargs):
                 self.post_run(*args, **kwargs)
 
