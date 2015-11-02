@@ -61,7 +61,6 @@ class Mongoop(object):
                 host=self._mongodb_host,
                 port=self._mongodb_port,
                 read_preference=ReadPreference.PRIMARY,
-                serverSelectionTimeoutMS=5000,
                 **self._mongodb_options
             )
             self.db = Database(self.conn, 'admin')
