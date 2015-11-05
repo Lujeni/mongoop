@@ -80,7 +80,7 @@ class Mongoop(object):
 
             if op_inprog:
                 for trigger_name in self.triggers.keys():
-                    trigger_module = import_module('mongoop.triggers.{}'.format(trigger_name))
+                    trigger_module = import_module('mongoop.triggers.{}'.format(trigger_name.split('_')[0]))
                     trigger_class = getattr(trigger_module, 'MongoopTrigger')
                     trigger = trigger_class(trigger_name=trigger_name,
                                             mongoop=self, operations=op_inprog)
@@ -89,12 +89,11 @@ class Mongoop(object):
             # TODO: DRY the mongoop triggers.
             if 'balancer' in self.extra_checks:
                 balancer = self.extra_checks['balancer']
-                if self._is_balancer_stopped() == balancer['enabled']:
-                    for trigger_name in balancer.get('triggers', []):
-                        trigger_module = import_module('mongoop.triggers.{}'.format(trigger_name))
+                for trigger_name, trigger_values in balancer.get('triggers', {}).items():
+                    if self._get_balancer_state() == trigger_values['enabled']:
+                        trigger_module = import_module('mongoop.triggers.{}'.format(trigger_name.split('_')[0]))
                         trigger_class = getattr(trigger_module, 'MongoopTriggerBalancer')
-                        trigger = trigger_class(trigger_name=trigger_name,
-                                                mongoop=self)
+                        trigger = trigger_class(trigger_name=trigger_name, mongoop=self)
                         threads.append(spawn(trigger))
 
             threads.append(spawn(sleep, self._frequency))
@@ -115,17 +114,17 @@ class Mongoop(object):
         finally:
             return op_inprog
 
-    def _is_balancer_stopped(self):
-        """ Determine if the balancer is currently enabled or disabled.
+    def _get_balancer_state(self):
+        """ Return the balancer state.
 
             Returns:
-                bool: False it's running, True otherwhise.
+                bool: True it's running, False otherwhise.
         """
         try:
             if self.conn.config.settings.find_one({'_id': 'balancer', 'stopped': True}):
                 logging.info('balancer state :: stopped')
-                return True
+                return False
             logging.info('balancer state :: started')
-            return False
+            return True
         except Exception as e:
             logging.error('unable to get the balancer state :: {}'.format(e))
