@@ -24,7 +24,7 @@ class MongoopTrigger(BaseTrigger):
 
         self.client = Client(self.params['dns'])
 
-    def run(self, *args, **kwargs):
+    def op_nok(self, operations):
         """
         This is the most low-level method available to send a message to sentry.
         """
@@ -35,9 +35,9 @@ class MongoopTrigger(BaseTrigger):
                     data={'level': self.params.get('level', 'info')},
                     extra={'operation': operation}
                 )
-                logging.info('run :: {} :: {}'.format(self.trigger_name, result))
+                logging.info('run :: {} :: {}'.format(self.name, result))
         except Exception as e:
-            logging.error('unable to run :: {} :: {}'.format(self.trigger_name, e))
+            logging.error('unable to run :: {} :: {}'.format(self.name, e))
             return False
         else:
             return True

@@ -57,7 +57,6 @@ This code has been tested under Python **2.7**, **3.4**.
   PyYAML==3.11
   gevent==1.1b3
   pymongo==3.0.2
-  pynsca==1.5 # /!\ not python3 compliance
 
 Installation
 ============

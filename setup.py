@@ -34,7 +34,6 @@ install_requires = [
     'PyYAML==3.11',
     'gevent==1.1b3',
     'pymongo==3.0.2',
-    'pynsca==1.5',
 ]
 
 tests_require = [
@@ -45,7 +44,7 @@ tests_require = [
 
 setup(
     name='mongoop',
-    version='0.2',
+    version='0.3',
     author='Lujeni',
     author_email='julien@thebault.co',
     description='Monitor and locate long running operations on MongoDB and automatically trigger specific actions for alerting and performance analysis.',

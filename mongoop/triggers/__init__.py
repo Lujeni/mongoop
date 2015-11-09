@@ -16,79 +16,92 @@ logging.basicConfig(
     level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(message)s')
 
 
-class TriggerSideImplemented(Exception):
-    pass
-
-
 class BaseTrigger(object):
-    """ Base to write a trigger.
-    """
-    def __init__(self, trigger_name, mongoop, operations=None):
-        """ Common stuff for the trigger.
+
+    def __init__(self, name, params, mongoop, category='op'):
+        """ Common Stuff for the trigger.
 
         Args:
-            trigger_name (str): the name of the current triger.
-            mongoop (object): see mongoop.core.
-            operations (list): all slow operations.
+            name (str): the name of the trigger.
+            params (dict): the necessary trigger params.
+            mongoop (object): the mongoop object, usefull to re-use the mongodb connection.
+            category (str) (default: op): the category of trigger (op, balancer).
         """
-        self.trigger_name = trigger_name
+        self.name = name
         self.mongoop = mongoop
-        self.params = self.mongoop.triggers.get(self.trigger_name, {})
+        self.category = category
+        _params = params
 
-        self._mix_operations = operations or []
-        self.operations = []
+        self.type = _params['type']
+        self.threshold = _params.get('threshold', None)
+        self.state = _params.get('state', True)
+        self.params = _params.get('params', {})
+        self.trigger_history = []
 
-    def __call__(self, *args, **kwargs):
-        """ Main runner.
+    def run(self, operations=None, balancer_state=False):
+        """ Init basic and check mandatory stuff before trigger the action.
+
+        Args:
+            operations (list): the slow operation.
+            balancer_state (bool): the state of the balancer.
         """
-        if self.pre_run(*args, **kwargs):
-            if self.run(*args, **kwargs):
-                self.post_run(*args, **kwargs)
+        if self.category == 'op':
+            self.run_op(operations=operations)
+        elif self.category == 'balancer':
+            self.run_balancer(balancer_state=balancer_state)
 
-    def pre_run(self):
-        """ pre runner.
-
-        BaseTrigger.pre_run create the operations variable.
-
-        Returns:
-            bool: True if successful, False otherwise.
+    def run_op(self, operations):
+        """ Trigger actions of slow operation type.
         """
-        try:
-            self.operations = [op for op in self._mix_operations
-                               if op['secs_running'] >= self.params['threshold']
-                               and op['opid'] not in self.mongoop.opid_by_trigger[self.trigger_name]]
-        except Exception as e:
-            logging.error('unable to pre_run :: {} :: {}'.format(self.trigger_name, e))
-            return False
+        operations = operations or []
+        if not self.state and not operations:
+            self.op_ok()
         else:
-            return True
+            _operations = []
+            for op in operations:
+                if (op['secs_running'] >= self.threshold) and (op['opid'] not in self.trigger_history):
+                    _operations.append(op)
+                    self.trigger_history.append(op['opid'])
+            
+            if _operations:
+                result = self.op_nok(operations=_operations)
 
-    def post_run(self):
-        """ post runner.
+    def run_balancer(self, balancer_state):
+        """ Trigger actions of balancer type.
 
-        BaseTrigger.post_run update the mongoop.opid_by_trigger variable with
-        the opid already process for the current trigger.
-
-        Returns:
-            bool: True if successful, False otherwise.
+        Args:
+            balancer_state (bool): the state of the balancer.
         """
-        try:
-            [self.mongoop.opid_by_trigger[self.trigger_name].add(operation['opid'])
-             for operation in self.operations]
-        except Exception as e:
-            logging.error('unable to pre_run :: {} :: {}'.format(self.trigger_name, e))
-            return False
+        if balancer_state == self.state:
+            self.balancer_ok(state=balancer_state)
         else:
-            return True
+            self.balancer_nok(state=balancer_state)
 
-    def run(self):
-        """ Must be trigger side implemented.
+    def op_nok(self, operations):
+        """ Run task when slow operation is found.
+
+        Args:
+            operations (list): the slow operation.
         """
-        raise TriggerSideImplemented("don't call the parent method :: you must implement the run method")
+        raise NotImplementedError('{} for op_nok'.format(self.type))
 
+    def op_ok(self):
+        """ Run task when no slow operation found.
+        """
+        raise NotImplementedError('{} for op_ok'.format(self.type))
 
-class BaseTriggerBalancer(BaseTrigger):
+    def balancer_nok(self, state):
+        """ Run task when the balancer state is wrong.
 
-    def __init__(self, *args, **kwargs):
-        super(BaseTriggerBalancer, self).__init__(*args, **kwargs)
-        self.params = self.mongoop.extra_checks['balancer']['triggers'].get(self.trigger_name, {})
+        Args:
+            state (boolean): True the balancer is running, False otherwhise.
+        """
+        raise NotImplementedError('{} for balancer_nok'.format(self.type))
+
+    def balancer_ok(self, state):
+        """ Run task when the balancer state is good.
+
+        Args:
+            state (boolean): True the balancer is running, False otherwhise.
+        """
+        raise NotImplementedError('{} for balancer_ok'.format(self.type))

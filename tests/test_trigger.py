@@ -12,6 +12,14 @@ def base_mongoop_arguments():
         'mongodb_port': 27017,
     }
 
+@pytest.fixture
+def base_mongoop_trigger_arguments():
+    return {
+        'name': 'pytest',
+        'params': {'threshold': 10},
+        'category': 'op'
+    }
+
 
 @pytest.fixture
 def base_mongoop(base_mongoop_arguments):
@@ -21,46 +29,54 @@ def base_mongoop(base_mongoop_arguments):
 
 
 @pytest.fixture
-def base_mongoop_trigger(base_mongoop):
+def base_mongoop_trigger(base_mongoop, base_mongoop_trigger_arguments):
     from mongoop.triggers import BaseTrigger
+    
+    trigger_params = base_mongoop_trigger_arguments
+    trigger_params['params']['type'] = 'base'
+    trigger_params['mongoop'] = base_mongoop
 
-    return BaseTrigger(trigger_name='pytest', mongoop=base_mongoop, operations={})
+    return BaseTrigger(**trigger_params)
 
 
 @pytest.fixture
-def email_mongoop_trigger(base_mongoop):
+def email_mongoop_trigger(base_mongoop, base_mongoop_trigger_arguments):
     from mongoop.triggers.email import MongoopTrigger
 
-    return MongoopTrigger(trigger_name='pytest', mongoop=base_mongoop, operations={})
+    trigger_params = base_mongoop_trigger_arguments
+    trigger_params['params']['type'] = 'email'
+    trigger_params['mongoop'] = base_mongoop
+    return MongoopTrigger(**trigger_params)
 
 
 @pytest.fixture
-def killer_mongoop_trigger(base_mongoop):
+def killer_mongoop_trigger(base_mongoop, base_mongoop_trigger_arguments):
     from mongoop.triggers.killer import MongoopTrigger
-
-    return MongoopTrigger(trigger_name='pytest', mongoop=base_mongoop, operations={})
+    
+    trigger_params = base_mongoop_trigger_arguments
+    trigger_params['params']['type'] = 'killer'
+    trigger_params['mongoop'] = base_mongoop
+    return MongoopTrigger(**trigger_params)
 
 
 @pytest.fixture
-def mongodb_mongoop_trigger(base_mongoop):
+def mongodb_mongoop_trigger(base_mongoop, base_mongoop_trigger_arguments):
     from mongoop.triggers.mongodb import MongoopTrigger
 
-    return MongoopTrigger(trigger_name='pytest', mongoop=base_mongoop, operations={})
-
-
-@pytest.fixture
-def nsca_mongoop_trigger(base_mongoop):
-    from mongoop.triggers.nsca import MongoopTrigger
-
-    return MongoopTrigger(trigger_name='pytest', mongoop=base_mongoop, operations={})
+    trigger_params = base_mongoop_trigger_arguments
+    trigger_params['params']['type'] = 'mongodb'
+    trigger_params['mongoop'] = base_mongoop
+    return MongoopTrigger(**trigger_params)
 
 
 def test_base_trigger_public_api(base_mongoop_trigger):
-    assert hasattr(base_mongoop_trigger, 'trigger_name')
+    assert hasattr(base_mongoop_trigger, 'name')
     assert hasattr(base_mongoop_trigger, 'mongoop')
+    assert hasattr(base_mongoop_trigger, 'type')
+    assert hasattr(base_mongoop_trigger, 'threshold')
+    assert hasattr(base_mongoop_trigger, 'state')
     assert hasattr(base_mongoop_trigger, 'params')
-    assert hasattr(base_mongoop_trigger, '_mix_operations')
-    assert hasattr(base_mongoop_trigger, 'operations')
+    assert hasattr(base_mongoop_trigger, 'trigger_history')
 
 
 def test_base_mongoop_public_api(base_mongoop):
@@ -69,46 +85,47 @@ def test_base_mongoop_public_api(base_mongoop):
     assert hasattr(base_mongoop, '_mongodb_host')
     assert hasattr(base_mongoop, '_mongodb_options')
     assert hasattr(base_mongoop, '_mongodb_port')
-    assert hasattr(base_mongoop, '_slow_query')
+    assert hasattr(base_mongoop, '_query')
+    assert hasattr(base_mongoop, '_base_op_query')
     assert hasattr(base_mongoop, '_threshold_timeout')
+    assert hasattr(base_mongoop, '_query')
 
     assert hasattr(base_mongoop, 'conn')
     assert hasattr(base_mongoop, 'db')
-    assert hasattr(base_mongoop, 'opid_by_trigger')
-    assert hasattr(base_mongoop, 'triggers')
+    assert hasattr(base_mongoop, 'op_triggers')
+    assert hasattr(base_mongoop, 'balancer_triggers')
 
 
 def test_email_trigger_public_api(email_mongoop_trigger):
-    assert hasattr(email_mongoop_trigger, 'trigger_name')
+    assert hasattr(email_mongoop_trigger, 'name')
     assert hasattr(email_mongoop_trigger, 'mongoop')
+    assert hasattr(email_mongoop_trigger, 'type')
+    assert hasattr(email_mongoop_trigger, 'category')
+    assert hasattr(email_mongoop_trigger, 'threshold')
+    assert hasattr(email_mongoop_trigger, 'state')
     assert hasattr(email_mongoop_trigger, 'params')
-    assert hasattr(email_mongoop_trigger, '_mix_operations')
-    assert hasattr(email_mongoop_trigger, 'operations')
 
 
 def test_killer_trigger_public_api(killer_mongoop_trigger):
-    assert hasattr(killer_mongoop_trigger, 'trigger_name')
+    assert hasattr(killer_mongoop_trigger, 'name')
     assert hasattr(killer_mongoop_trigger, 'mongoop')
+    assert hasattr(killer_mongoop_trigger, 'type')
+    assert hasattr(killer_mongoop_trigger, 'category')
+    assert hasattr(killer_mongoop_trigger, 'threshold')
+    assert hasattr(killer_mongoop_trigger, 'state')
     assert hasattr(killer_mongoop_trigger, 'params')
-    assert hasattr(killer_mongoop_trigger, '_mix_operations')
-    assert hasattr(killer_mongoop_trigger, 'operations')
 
 
 @pytest.mark.skipif(True, reason='need mongodb instance')
 def test_mongodb_trigger_public_api(mongodb_mongoop_trigger):
-    assert hasattr(mongodb_mongoop_trigger, 'trigger_name')
+    assert hasattr(mongodb_mongoop_trigger, 'name')
     assert hasattr(mongodb_mongoop_trigger, 'mongoop')
+    assert hasattr(mongodb_mongoop_trigger, 'type')
+    assert hasattr(mongodb_mongoop_trigger, 'category')
+    assert hasattr(mongodb_mongoop_trigger, 'threshold')
+    assert hasattr(mongodb_mongoop_trigger, 'state')
     assert hasattr(mongodb_mongoop_trigger, 'params')
-    assert hasattr(mongodb_mongoop_trigger, '_mix_operations')
     assert hasattr(mongodb_mongoop_trigger, 'operations')
 
     assert hasattr(mongodb_mongoop_trigger, 'db')
     assert hasattr(mongodb_mongoop_trigger, 'collection')
-
-@pytest.mark.skipif(sys.version_info > (3,), reason="pynsca is not python3 compliance")
-def test_nsca_trigger_public_api(nsca_mongoop_trigger):
-    assert hasattr(nsca_mongoop_trigger, 'trigger_name')
-    assert hasattr(nsca_mongoop_trigger, 'mongoop')
-    assert hasattr(nsca_mongoop_trigger, 'params')
-    assert hasattr(nsca_mongoop_trigger, '_mix_operations')
-    assert hasattr(nsca_mongoop_trigger, 'operations')

@@ -19,6 +19,6 @@ frequency = 10
 
 threshold_timeout = 60
 
-triggers = {}
+op_triggers = None
 
-balancer = None
+balancer_triggers = None
