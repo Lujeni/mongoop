@@ -89,8 +89,9 @@ class Mongoop(object):
             # TODO: DRY the mongoop triggers.
             if 'balancer' in self.extra_checks:
                 balancer = self.extra_checks['balancer']
+                balancer_state = self._get_balancer_state()
                 for trigger_name, trigger_values in balancer.get('triggers', {}).items():
-                    if self._get_balancer_state() == trigger_values['enabled']:
+                    if balancer_state == trigger_values['enabled']:
                         trigger_module = import_module('mongoop.triggers.{}'.format(trigger_name.split('_')[0]))
                         trigger_class = getattr(trigger_module, 'MongoopTriggerBalancer')
                         trigger = trigger_class(trigger_name=trigger_name, mongoop=self)
