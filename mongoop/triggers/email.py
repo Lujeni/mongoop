@@ -42,6 +42,9 @@ class MongoopTrigger(BaseTrigger):
 
     def run(self):
         try:
+            # NOTE: modify after the trigger refactoring
+            if not self.operations:
+                return True
             msg_from = self.params['from']
             msg_to = self.params['to']
             gmail = self.params.get('gmail')

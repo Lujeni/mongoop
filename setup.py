@@ -45,7 +45,7 @@ tests_require = [
 
 setup(
     name='mongoop',
-    version='0.2',
+    version='0.2.1',
     author='Lujeni',
     author_email='julien@thebault.co',
     description='Monitor and locate long running operations on MongoDB and automatically trigger specific actions for alerting and performance analysis.',
