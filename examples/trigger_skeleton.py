@@ -25,65 +25,36 @@ class MongoopTrigger(BaseTrigger):
 
     def __init__(self, *args, **kwargs):
         """
-        NO NEED TO IMPLEMENT in your trigger.
-
-        more details: mongoop.triggers.__init__.BaseTrigger.__call__
-        """
-        pass
-
-    def __call__(self, *args, **kwargs):
-        """
-        NO NEED TO IMPLEMENT in your trigger.
-
-        more details: mongoop.triggers.__init__.BaseTrigger.__call__
-        """
-        pass
-
-    def pre_run(self, *args, **kwargs):
-        """
-        OPTIONAL task.
-
         Necessary to call the parent method (super).
-        Returns True to continue the process (run, post_run).
 
-        more details: mongoop.triggers.__init__.BaseTrigger.pre_run
+        more details: mongoop.triggers.__init__.BaseTrigger.__call__
         """
-        try:
-            super(MongoopTrigger, self).run(*args, **kwargs)
+        super(MongoopTrigger, self).__init__(*args, **kwargs)
 
-            print "pre_run task"
-        except Exception as e:
-            logging.error('unable to pre_run :: {} :: {}'.format(self.trigger_name, e))
-            return False
-        else:
-            return True
+        self.foo = bar
 
-    def run(self):
-        """ Main function, do what you want.
-            Returns True to continue the process (post_run).
+    def op_nok(self, operations):
+        """ Main function when a slow operation is found.
         """
-        try:
-            print "main task"
-        except Exception as e:
-            logging.error('unable to run :: {} :: {}'.format(self.trigger_name, e))
-            return False
-        else:
-            return True
+        raise NotImplementedError('{} for op_ok'.format(self.type))
 
-    def post_run(self, * args, **kwargs):
+    def op_ok(self):
+        """ Run task when no slow operation found.
         """
-        OPTIONAL task
+        raise NotImplementedError('{} for op_ok'.format(self.type))
 
-        Necessary to call the parent method (super)
+    def balancer_nok(self, state):
+        """ Run task when the balancer state is wrong.
 
-        more details: mongoop.triggers.__init__.BaseTrigger.post_run
+        Args:
+            state (boolean): True the balancer is running, False otherwhise.
         """
-        try:
-            super(MongoopTrigger, self).run(*args, **kwargs)
+        raise NotImplementedError('{} for balancer_nok'.format(self.type))
 
-            print "i am a skeleton post_run"
-        except Exception as e:
-            logging.error('unable to post_run :: {} :: {}'.format(self.trigger_name, e))
-            return False
-        else:
-            return True
+    def balancer_ok(self, state):
+        """ Run task when the balancer state is good.
+
+        Args:
+            state (boolean): True the balancer is running, False otherwhise.
+        """
+        raise NotImplementedError('{} for balancer_ok'.format(self.type))

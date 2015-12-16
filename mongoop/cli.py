@@ -38,19 +38,15 @@ def main():
 
             s.__dict__.update(settings)
 
-        extra_checks = {}
-        if s.balancer:
-            extra_checks['balancer'] = s.balancer
-
         mongoop = Mongoop(
             mongodb_host=s.mongodb_host,
             mongodb_port=s.mongodb_port,
             mongodb_credentials=s.mongodb_credentials,
             mongodb_options=s.mongodb_options,
             frequency=s.frequency,
-            triggers=s.triggers,
+            op_triggers=s.op_triggers,
+            balancer_triggers=s.balancer_triggers,
             threshold_timeout=s.threshold_timeout,
-            extra_checks=extra_checks,
         )
         mongoop()
     except KeyboardInterrupt:

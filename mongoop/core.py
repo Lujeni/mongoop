@@ -13,6 +13,8 @@ import logging
 
 from collections import defaultdict
 from importlib import import_module
+from itertools import product
+from time import time
 from time import sleep
 
 from gevent import joinall
@@ -32,7 +34,8 @@ logging.basicConfig(
 class Mongoop(object):
 
     def __init__(self, mongodb_host, mongodb_port, mongodb_credentials=None,
-                 mongodb_options=None, frequency=0, triggers=None, threshold_timeout=None, extra_checks=None):
+                 mongodb_options=None, frequency=0, op_triggers=None,
+                 balancer_triggers=None, threshold_timeout=None, query=None):
         try:
             # mongodb
             self._mongodb_host = mongodb_host
@@ -42,20 +45,19 @@ class Mongoop(object):
 
             # mongoop triggers
             self._frequency = frequency or 30
-            self.opid_by_trigger = defaultdict(set)
-            self.triggers = triggers or {}
-
+            self.op_triggers = op_triggers or {}
+            self.balancer_triggers = balancer_triggers or {}
             self._threshold_timeout = threshold_timeout or 60
-            if self.triggers:
-                self._threshold_timeout = min([v['threshold'] for v in self.triggers.values()])
+            self._query = query or {}
 
-            self._slow_query = {
+            # NOTE: retrieve the minimum threshold.
+            if self.op_triggers:
+                self._threshold_timeout = min([v['threshold'] for v in self.op_triggers.values()])
+            self._base_op_query = {
                 'secs_running': {'$gte': self._threshold_timeout},
-                'op': {'$ne': 'none'},
+                'op': {'$ne': 'none'}
             }
-
-            # mongoop extra checks
-            self.extra_checks = extra_checks or {}
+            self._base_op_query.update(self._query)
 
             self.conn = MongoClient(
                 host=self._mongodb_host,
@@ -66,6 +68,21 @@ class Mongoop(object):
             self.db = Database(self.conn, 'admin')
             if self._mongodb_credentials:
                 self.db.authenticate(**self._mongodb_credentials)
+
+            # NOTE: add the callable for each trigger
+            self.cycle_op_triggers = []
+            self.cycle_balancer_triggers = []
+
+            for t_name, t_values in self.op_triggers.items():
+                _callable = self._get_trigger_callable(t_name, t_values)
+                if _callable:
+                    self.cycle_op_triggers.append(_callable)
+
+            for t_name, t_values in self.balancer_triggers.items():
+                _callable = self._get_trigger_callable(t_name, t_values, category='balancer')
+                if _callable:
+                    self.cycle_balancer_triggers.append(_callable)
+
         except TypeError as e:
             logging.error('unable to authenticate to admin database :: {}'.format(e))
         except OperationFailure as e:
@@ -74,31 +91,47 @@ class Mongoop(object):
             logging.error('unable to connect to database :: {}'.format(e))
 
     def __call__(self):
+        """ Main function.
+        """
         while True:
-            threads = []
-            op_inprog = self._current_op()
+            start = time()
+            self.call_op_triggers()
+            self.call_balancer_triggers()
+            exec_time = time() - start
+            if exec_time < self._frequency:
+                sleep(self._frequency - exec_time)
 
-            if op_inprog:
-                for trigger_name in self.triggers.keys():
-                    trigger_module = import_module('mongoop.triggers.{}'.format(trigger_name.split('_')[0]))
-                    trigger_class = getattr(trigger_module, 'MongoopTrigger')
-                    trigger = trigger_class(trigger_name=trigger_name,
-                                            mongoop=self, operations=op_inprog)
-                    threads.append(spawn(trigger))
+    def call_op_triggers(self):
+        """ Main function to run the op triggers.
+        """
+        operations = self._current_op()
+        for trigger in self.cycle_op_triggers:
+            trigger.run(operations=operations)
 
-            # TODO: DRY the mongoop triggers.
-            if 'balancer' in self.extra_checks:
-                balancer = self.extra_checks['balancer']
-                balancer_state = self._get_balancer_state()
-                for trigger_name, trigger_values in balancer.get('triggers', {}).items():
-                    if balancer_state == trigger_values['enabled']:
-                        trigger_module = import_module('mongoop.triggers.{}'.format(trigger_name.split('_')[0]))
-                        trigger_class = getattr(trigger_module, 'MongoopTriggerBalancer')
-                        trigger = trigger_class(trigger_name=trigger_name, mongoop=self)
-                        threads.append(spawn(trigger))
+    def call_balancer_triggers(self):
+        """ Main function to run the balancer triggers.
+        """
+        if not self.balancer_triggers:
+            return True
 
-            threads.append(spawn(sleep, self._frequency))
-            joinall(threads)
+        balancer_state = self._get_balancer_state()
+        for trigger in self.cycle_balancer_triggers:
+            trigger.run(balancer_state=balancer_state)
+
+    def _get_trigger_callable(self, trigger_name, trigger_params, category='op'):
+        """ Retrieve the corresponding trigger by name and add into the triggers list.
+
+        Args:
+        """
+        try:
+            trigger_module = import_module('mongoop.triggers.{}'.format(trigger_params['type']))
+            trigger_class = getattr(trigger_module, 'MongoopTrigger')
+            trigger = trigger_class(name=trigger_name, params=trigger_params,
+                mongoop=self, category=category)
+        except Exception as e:
+            logging.error('unable to retrieve the trigger callable :: {}'.format(e))
+        else:
+            return trigger
 
     def _current_op(self):
         """ Get informations on operations currently running.
@@ -106,7 +139,7 @@ class Mongoop(object):
         try:
             op_inprog = {}
             coll = self.db.get_collection("$cmd.sys.inprog")
-            result = coll.find_one(self._slow_query)
+            result = coll.find_one(self._base_op_query)
             op_inprog = result.get('inprog', {})
         except Exception as e:
             logging.error('unable to retrieve op :: {}'.format(e))

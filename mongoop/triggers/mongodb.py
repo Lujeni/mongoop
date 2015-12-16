@@ -31,12 +31,13 @@ class MongoopTrigger(BaseTrigger):
         self.collection = self.db.get_collection(collection)
         self.collection.create_index([('opid', DESCENDING)], unique=True, background=True)
 
-    def run(self):
+    def op_nok(self, operations):
         try:
-            self.collection.insert_many(self.operations)
-        except Exception:
-            # TODO: logging
+            if operations:
+                self.collection.insert_many(operations)
+        except Exception as e:
+            logging.error('unable to bulk operations :: {} :: {}'.format(self.name, e))
             return False
         else:
-            logging.info('run :: {} :: bulk insert {} operations'.format(self.trigger_name, len(self.operations)))
+            logging.info('run :: {} :: bulk insert {} operations'.format(self.name, len(operations)))
             return True

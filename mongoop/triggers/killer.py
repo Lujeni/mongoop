@@ -16,18 +16,19 @@ logging.basicConfig(
 
 
 class MongoopTrigger(BaseTrigger):
-
-    def run(self):
+    
+    def op_nok(self, operations):
         """ Terminates an operation as specified by the operation ID.
         """
         try:
-            for operation in self.operations:
+            for operation in operations:
                 opid = operation['opid']
                 result = self.mongoop.db.get_collection('$cmd.sys.killop').find_one(
                     {'op': opid})
-                logging.info('run :: {} :: {} {}'.format(self.trigger_name, result.get('info', 'op'), opid))
+                logging.info('run :: {} :: {} {}'.format(self.name, result.get('info', 'op'), opid))
         except Exception as e:
-            logging.error('unable to run :: {} :: {}'.format(self.trigger_name, e))
+            logging.error('unable to run :: {} :: {}'.format(self.name, e))
             return False
         else:
+            logging.info('run :: {} :: kill {} operations'.format(self.name, len(operations)))
             return True

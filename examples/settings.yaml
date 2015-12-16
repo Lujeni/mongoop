@@ -11,55 +11,71 @@ frequency: 10
 
 threshold_timeout: 60
 
-triggers:
-  mongodb:
-    threshold: 5
-    database: mongoop
-    collection: history
+op_triggers: []
 
-  nsca:
-    threshold: 5
-    monitoring_server: nagios.foo.com
-    service: mongoop
+balancer_triggers: []
 
-  nsca:
-    threshold: 60
-    monitoring_server: nagios.foo.com
-    service: mongoop
-    status: critical
-
-  email:
-    threshold: 60
-    subject: 'Mongoop report'
-    from: 'mongoop@localhost'
-    to: 'root'
-    smtp_host: 'localhost'
-
-  sentry:
-    threshold: 80
-    dsn: 'https://898weqe899qweqeq8:wqeqw8888@app.getsentry.com/76885'
-    message: 'mongoop slow operation :: {opid}'
-    level: info
-
-  killer:
-    threshold: 120
-
-  webhook:
-    threshold: 240
-    method: get
-    url: https://httpbin.org/get
-    params:
-      show_env: 1
-    requests_params:
-      verify: False
-
-balancer:
-  state: enabled
-  triggers:
-    webhook:
-      method: get
-      url: https://httpbin.org/get
-      params:
-        show_env: 1
-      requests_params:
-        verify: False
+# op_triggers:
+#   trigger_mongodb_1:
+#     type: mongodb
+#     threshold: 5
+#     state: True
+#     params:
+#       database: mongoop
+#       collection: history
+# 
+#   trigger_email_xxx:
+#     type: email
+#     threshold: 60
+#     state: True
+#     params:
+#       subject: 'Mongoop report'
+#       from: 'mongoop@localhost'
+#       to: 'root'
+#       smtp_host: 'localhost'
+# 
+#   foo_bar_sentry:
+#     type: sentry
+#     threshold: 80
+#     state: True
+#     params:
+#       dsn: 'https://898weqe899qweqeq8:wqeqw8888@app.getsentry.com/76885'
+#       message: 'mongoop slow operation :: {opid}'
+#       level: info
+# 
+#   foo_killer:
+#     type: killer
+#     threshold: 120
+#     state: True
+# 
+#   webhook_trigger:
+#     threshold: 240
+#     state: True
+#     params:
+#       method: get
+#       url: https://httpbin.org/get
+#       http_params:
+#         show_env: 1
+#       requests_params:
+#         verify: False
+# 
+# balancer_triggers:
+#   webhook:
+#     state: True
+#     params:
+#       method: get
+#       url: https://httpbin.org/get
+#       http_params:
+#         show_env: 1
+#       requests_params:
+#         verify: False
+# 
+#   webhook_nok:
+#     state: False
+#     params:
+#       method: get
+#       url: https://httpbin.org/get
+#       http_params:
+#         show_env: 1
+#       requests_params:
+#         verify: False
