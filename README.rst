@@ -55,7 +55,6 @@ This code has been tested under Python **2.7**, **3.4**.
   # install by the setup
   Jinja2==2.8
   PyYAML==3.11
-  gevent==1.1b3
   pymongo==3.0.2
 
 Installation

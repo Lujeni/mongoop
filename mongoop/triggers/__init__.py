@@ -62,9 +62,8 @@ class BaseTrigger(object):
                 if (op['secs_running'] >= self.threshold) and (op['opid'] not in self.trigger_history):
                     _operations.append(op)
                     self.trigger_history.append(op['opid'])
-            
             if _operations:
-                result = self.op_nok(operations=_operations)
+                self.op_nok(operations=_operations)
 
     def run_balancer(self, balancer_state):
         """ Trigger actions of balancer type.

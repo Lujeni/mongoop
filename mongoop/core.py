@@ -11,14 +11,9 @@
 
 import logging
 
-from collections import defaultdict
 from importlib import import_module
-from itertools import product
 from time import time
 from time import sleep
-
-from gevent import joinall
-from gevent import spawn
 
 from pymongo import MongoClient
 from pymongo.database import Database

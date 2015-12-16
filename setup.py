@@ -32,7 +32,6 @@ class PyTest(TestCommand):
 install_requires = [
     'Jinja2==2.8',
     'PyYAML==3.11',
-    'gevent==1.1b3',
     'pymongo==3.0.2',
 ]
 
@@ -44,7 +43,7 @@ tests_require = [
 
 setup(
     name='mongoop',
-    version='0.3',
+    version='0.3.1',
     author='Lujeni',
     author_email='julien@thebault.co',
     description='Monitor and locate long running operations on MongoDB and automatically trigger specific actions for alerting and performance analysis.',

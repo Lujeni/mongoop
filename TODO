@@ -2,11 +2,5 @@
   new:
     - IRC
 
-  update:
-    mongodb:
-      - custom operations field
-
 - core:
-  - convert the micro_s
-  - remove gevent use generator
-  - support multiple hosts
+  asyncio/gevent ?
