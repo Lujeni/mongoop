@@ -59,9 +59,14 @@ class BaseTrigger(object):
         else:
             _operations = []
             for op in operations:
-                if (op['secs_running'] >= self.threshold) and (op['opid'] not in self.trigger_history):
-                    _operations.append(op)
-                    self.trigger_history.append(op['opid'])
+                unique_op = '{opid}_{connectionId}'.format(**op)
+                if op['secs_running'] >= self.threshold:
+                    if unique_op not in self.trigger_history:
+                        _operations.append(op)
+                        self.trigger_history.append(unique_op)
+                    else:
+                        logging.info('{} already process'.format(unique_op))
+
             if _operations:
                 self.op_nok(operations=_operations)
 
