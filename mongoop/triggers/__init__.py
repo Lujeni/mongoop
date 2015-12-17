@@ -71,9 +71,9 @@ class BaseTrigger(object):
         Args:
             balancer_state (bool): the state of the balancer.
         """
-        if balancer_state == self.state:
+        if balancer_state and self.state:
             self.balancer_ok(state=balancer_state)
-        else:
+        elif not balancer_state and not self.state:
             self.balancer_nok(state=balancer_state)
 
     def op_nok(self, operations):
