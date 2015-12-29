@@ -47,7 +47,7 @@ class Mongoop(object):
 
             # NOTE: retrieve the minimum threshold.
             if self.op_triggers:
-                self._threshold_timeout = min([v['threshold'] for v in self.op_triggers.values()])
+                self._threshold_timeout = min([v['threshold'] for v in self.op_triggers.values() if 'threshold' in v])
             self._base_op_query = {
                 'secs_running': {'$gte': self._threshold_timeout},
                 'op': {'$ne': 'none'}
