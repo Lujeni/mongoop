@@ -47,6 +47,7 @@ def main():
             op_triggers=s.op_triggers,
             balancer_triggers=s.balancer_triggers,
             threshold_timeout=s.threshold_timeout,
+            query=s.query,
         )
         mongoop()
     except KeyboardInterrupt:

@@ -22,3 +22,5 @@ threshold_timeout = 60
 op_triggers = None
 
 balancer_triggers = None
+
+query = None
