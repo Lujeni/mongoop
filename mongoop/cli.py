@@ -28,6 +28,7 @@ def main():
 
         args = parser.parse_args()
         config = args.config_file
+        settings = {}
 
         if config:
             if config.endswith('.py'):
