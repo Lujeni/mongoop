@@ -60,6 +60,7 @@ setup(
     extra_requires={
         'sentry': ['raven==5.5.0'],
         'webhook': ['requests==2.8.1'],
+        'graphite': ['graphitesend==0.5.0'],
     },
     entry_points={
         'console_scripts': [

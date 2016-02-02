@@ -58,6 +58,15 @@ balancer_triggers: []
 #         show_env: 1
 #       requests_params:
 #         verify: False
+#
+#   graphite_trigger:
+#      threshold: 500
+#      state: True
+#      params:
+#        metric_per_ns: True
+#        graphitesend_params:
+#          prefix: mongoop.slow_op
+#          system_name: ''
 # 
 # balancer_triggers:
 #   webhook:
