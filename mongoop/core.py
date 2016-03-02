@@ -84,6 +84,13 @@ class Mongoop(object):
             logging.error('authentication failure :: {}'.format(e))
         except ConnectionFailure as e:
             logging.error('unable to connect to database :: {}'.format(e))
+        else:
+            logging.info('start mongoop :: {}'.format(self))
+
+    def __str__(self):
+        return u'{} :: frequency={} :: slow_query={} :: op_triggers={} :: balancer_triggers={}'.format(
+            self.conn, self._frequency, self._base_op_query, len(self.cycle_op_triggers),
+            len(self.cycle_balancer_triggers))
 
     def __call__(self):
         """ Main function.
@@ -139,7 +146,9 @@ class Mongoop(object):
         except Exception as e:
             logging.error('unable to retrieve op :: {}'.format(e))
         else:
-            logging.info('found {} slow op'.format(len(op_inprog)))
+            if op_inprog:
+                logging.info('found {} slow op'.format(len(op_inprog)))
+            logging.debug('found {} slow op'.format(len(op_inprog)))
         finally:
             return op_inprog
 
