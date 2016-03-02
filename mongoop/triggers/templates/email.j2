@@ -6,7 +6,7 @@
     <title>Mongoop report</title>
   </head>
   <body>
-    {% for operation in operations %}
+    {% for operation in context %}
     <b><u>Found 1 slow operation:</u></b>
     <dl>
       {% for key, value in operation.iteritems() %}

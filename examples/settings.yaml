@@ -33,6 +33,10 @@ balancer_triggers: []
 #       from: 'mongoop@localhost'
 #       to: 'root'
 #       smtp_host: 'localhost'
+#       tls: False
+#       auth:
+#         user: coconut
+#         password: 1234
 # 
 #   foo_bar_sentry:
 #     type: sentry
