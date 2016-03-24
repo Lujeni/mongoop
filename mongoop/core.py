@@ -14,6 +14,7 @@ import logging
 from importlib import import_module
 from time import time
 from time import sleep
+from sys import exit
 
 from pymongo import MongoClient
 from pymongo.database import Database
@@ -62,7 +63,8 @@ class Mongoop(object):
             )
             self.db = Database(self.conn, 'admin')
             if self._mongodb_credentials:
-                self.db.authenticate(**self._mongodb_credentials)
+                self.db.authenticate(self._mongodb_credentials['username'],
+                    self._mongodb_credentials['password'])
 
             # NOTE: add the callable for each trigger
             self.cycle_op_triggers = []
@@ -80,6 +82,7 @@ class Mongoop(object):
 
         except TypeError as e:
             logging.error('unable to authenticate to admin database :: {}'.format(e))
+            exit(1)
         except OperationFailure as e:
             logging.error('authentication failure :: {}'.format(e))
         except ConnectionFailure as e:

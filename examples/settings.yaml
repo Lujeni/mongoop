@@ -4,6 +4,8 @@ mongodb_host: 'localhost'
 mongodb_port: 27017
 
 mongodb_credentials:
+  username: root
+  password: root
 
 mongodb_options:
 
@@ -72,8 +74,8 @@ balancer_triggers: []
 #          prefix: mongoop.slow_op
 #          system_name: ''
 # 
-# balancer_triggers:
-#   webhook:
+#  balancer_triggers:
+#    webhook:
 #     state: True
 #     params:
 #       method: get
@@ -92,3 +94,13 @@ balancer_triggers: []
 #         show_env: 1
 #       requests_params:
 #         verify: False
+#
+#   mattermost:
+#    type: mattermost
+#    threshold: 1
+#    state: True
+#    params:
+#      url: https://gitlab.mattermost.com
+#      api_key: srkoxkm1ytyrtqmfiksaao5h3e
+#      channel: mongoop
+#
