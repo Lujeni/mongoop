@@ -64,7 +64,7 @@ class Mongoop(object):
             self.db = Database(self.conn, 'admin')
             if self._mongodb_credentials:
                 # NOTE: avoid a breaking chance since the version 0.5
-                username = self._mongodb_credentials.get('name') or self._mongodb_credentials('username')
+                username = self._mongodb_credentials.get('name') or self._mongodb_credentials.get('username')
                 self.db.authenticate(username, self._mongodb_credentials['password'])
 
             # NOTE: add the callable for each trigger
