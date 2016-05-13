@@ -43,7 +43,7 @@ tests_require = [
 
 setup(
     name='mongoop',
-    version='0.5',
+    version='0.6',
     author='Lujeni',
     author_email='julien@thebault.co',
     description='Monitor and locate long running operations on MongoDB and automatically trigger specific actions for alerting and performance analysis.',
@@ -61,6 +61,7 @@ setup(
         'sentry': ['raven==5.5.0'],
         'webhook': ['requests==2.8.1'],
         'graphite': ['graphitesend==0.5.0'],
+        'mattermost': ['matterhook==0.1'],
     },
     entry_points={
         'console_scripts': [
