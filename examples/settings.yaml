@@ -103,4 +103,5 @@ balancer_triggers: []
 #      url: https://gitlab.mattermost.com
 #      api_key: srkoxkm1ytyrtqmfiksaao5h3e
 #      channel: mongoop
-#
+#      username: Mongoop
+#      icon_url: http://xxx.com
