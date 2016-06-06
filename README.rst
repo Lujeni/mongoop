@@ -43,8 +43,10 @@ Currently, mongoop is a simple cli tool:
 Using your own settings as well:
 ::
 
-    $ mongoop --config /path/to/settings.py
-    $ mongoop --config /path/to/settings.yaml
+    $ mongoop --config /path/to/settings.[yaml:py]
+    # or
+    $ export MONGOP_CONFIG_FILE="/path/to/settings.[yaml:py]"
+    $ mongoop
 
 
 Requirements

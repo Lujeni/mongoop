@@ -11,6 +11,7 @@
 
 import argparse
 import imp
+import os
 import sys
 
 from yaml import load
@@ -29,6 +30,9 @@ def main():
         args = parser.parse_args()
         config = args.config_file
         settings = {}
+
+        if os.environ.get('MONGOOP_CONFIG_FILE'):
+            config = os.environ['MONGOOP_CONFIG_FILE']
 
         if config:
             if config.endswith('.py'):
