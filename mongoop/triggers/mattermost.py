@@ -29,7 +29,7 @@ class MongoopTrigger(BaseTrigger):
     def send_hook(self, message):
         try:
             self.mwh.send(message, channel=self.params['channel'])
-            logging.info('run :: {} :: {}'.format(self.name))
+            logging.info('run :: {}'.format(self.name))
         except Exception as e:
             logging.error('unable to run :: {} :: {}'.format(self.name, e))
             return False
