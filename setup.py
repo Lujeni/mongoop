@@ -31,7 +31,7 @@ class PyTest(TestCommand):
 
 install_requires = [
     'Jinja2==2.8',
-    'PyYAML==3.11',
+    'PyYAML==5.4',
     'pymongo==3.0.2',
 ]
 
